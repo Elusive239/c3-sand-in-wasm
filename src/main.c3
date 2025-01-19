@@ -1,7 +1,6 @@
 module noir;
 import std::io;
 import noir::log;
-import noir::pool;
 import noir::wasm;
 
 

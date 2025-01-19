@@ -1,6 +1,5 @@
 module noir::wasm;
 import noir::log;
-import noir::pool;
 import noir::simulation;
 
 struct Pixel{
