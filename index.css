@@ -1,0 +1,20 @@
+body{
+    background-color: #000;
+}
+
+/* canvas{
+    border:1px solid #808080;
+
+} */
+
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 800px;
+    height: 600px;
+    border:1px solid #808080;
+    image-rendering: pixelated;
+}
