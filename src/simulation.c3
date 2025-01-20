@@ -1,6 +1,6 @@
 module noir::simulation;
-import noir::wasm;
 import noir::log;
+import noir::common;
 
 struct Simulation{
     char** particles;
@@ -15,17 +15,8 @@ fn void init(int width, int height){
     sim.width = width;
     sim.height = height;
 
-    sim.particles = allocate_2d_array(char, sim.width, sim.height);
-    sim.new_particles = allocate_2d_array(char, sim.width, sim.height);
-}
-
-
-macro allocate_2d_array($Type, width, height){
-    $Type** arr = allocator::new_array(allocator::heap(), $Type*, height);
-    for(int y = 0; y < height; y++){
-        arr[y] = allocator::new_array(allocator::heap(), $Type, width);
-    }
-    return arr;
+    sim.particles = common::allocate_2d_array(char, sim.width, sim.height);
+    sim.new_particles = common::allocate_2d_array(char, sim.width, sim.height);
 }
 
 fn void free_sim(){
@@ -38,7 +29,7 @@ fn void free_sim(){
 }
 
 fn void add_random_sand() @extern("_add_random_sand") @wasm @if(env::WASM_NOLIBC){
-    int i = (int)(sim.width * wasm::rand());
+    int i = (int)(sim.width * common::rand());
     sim.particles[0][i] = 1;
 }
 

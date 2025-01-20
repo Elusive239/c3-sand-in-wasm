@@ -5,7 +5,7 @@ The sim was originally based on this coding challenge from [The Coding Train](ht
 
 To compile it, use the following command:
 ```C
-    c3c compile --reloc=none --target wasm32 -g0 --link-libc=no --no-entry src/main.c3 src/logging.c3 .\src\wasm.c3 .\src\simulation.c3
+    c3c compile --reloc=none --target wasm32 -g0 --link-libc=no --no-entry src/main.c3 src/logging.c3 .\src\wasm.c3 .\src\simulation.c3 .\src\render_common.c3
 ```
 
 To run it I recommend using the following in the projects main directory if you have python installed:
