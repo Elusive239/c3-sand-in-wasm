@@ -14,27 +14,6 @@ enum LogType : (String log_prefix) @private{
     ERROR   = @log_prefix(3)
 }
 
-interface OutStream {
-	fn void! flush() @optional;
-	fn usz! write(char[] bytes);
-}
-
-OutStream stream @private;
-OutStream err_stream @private;
-
-fn void logger_init() @init @if(!env::NO_LIBC){
-    stream = (OutStream) io::stdout();
-    err_stream = (OutStream) io::stderr();
-}
-
-fn void set_out(OutStream new_stream){
-    stream = new_stream;
-}
-
-fn void set_err(OutStream new_err_stream){
-    err_stream = new_err_stream;
-}
-
 macro String @log_prefix($type) @private{
     $if((!$feature(NO_LOG_COLOR) && (!env::WIN32) || $feature(FORCE_LOG_COLOR))):
         $switch($type)
@@ -53,7 +32,28 @@ macro String @log_prefix($type) @private{
     $endif
 }
 
-macro void full_log(LogType type, OutStream stream, String fmt, args...)@private{
+interface LoggerOut {
+	fn void! flush() @optional;
+	fn usz! write(char[] bytes);
+}
+
+LoggerOut stream @private;
+LoggerOut err_stream @private;
+
+fn void logger_init() @init @if(!env::NO_LIBC){
+    stream = (LoggerOut) io::stdout();
+    err_stream = (LoggerOut) io::stderr();
+}
+
+fn void set_out(LoggerOut new_stream){
+    stream = new_stream;
+}
+
+fn void set_err(LoggerOut new_err_stream){
+    err_stream = new_err_stream;
+}
+
+macro void full_log(LogType type, LoggerOut stream, String fmt, args...)@private{
     @pool(){
         DString str = dstring::temp_with_capacity(type.log_prefix.len + fmt.len + args.len * 8);
         if(type != LogType.NONE) str.append(type.log_prefix);
@@ -72,40 +72,26 @@ macro void full_log(LogType type, OutStream stream, String fmt, args...)@private
 
 fn void log(String fmt, args...) @builtin{
     $switch
-        // $case env::WASM_NOLIBC: 
-        //     WasmLogger logger;
-        //     full_log(LogType.NONE, &logger, fmt, ...args);
         $case !$feature(NO_LOG): full_log(LogType.NONE, stream, fmt, ...args);
     $endswitch
 }
 
 fn void wlog(String fmt, args...) @builtin{
     $switch
-        // $case env::WASM_NOLIBC: 
-        //     WasmLogger logger;
-        //     full_log(LogType.WARNING, &logger, fmt, ...args);
         $case !$feature(NO_LOG): full_log(LogType.WARNING, stream, fmt, ...args);
     $endswitch
 }
 
 fn void elog(String fmt, args...) @builtin{
     $switch
-        // $case env::WASM_NOLIBC: 
-        //     WasmLogger logger;
-        //     full_log(LogType.ERROR, &logger, fmt, ...args);
         $case !$feature(NO_LOG): full_log(LogType.ERROR, err_stream, fmt, ...args);
     $endswitch
 }
 
 fn void dlog(String fmt, args...) @builtin{
     $switch
-        // $case env::WASM_NOLIBC: 
-        //     WasmLogger logger;
-        //     full_log(LogType.NONE, &logger, fmt, ...args);
         $case ($feature(DEBUG) && !$feature(NO_LOG)): full_log(LogType.DEBUG, stream, fmt, ...args);
     $endswitch
 }
 
-
-//WASM
 extern fn void write(void *buffer, usz buffer_sz) @extern("console_log") @if(env::WASM_NOLIBC);

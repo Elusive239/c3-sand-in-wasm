@@ -6,6 +6,7 @@ struct Pixel{
 	char r; // 00000000 + 00000000 + 00000000
     char g; // 0..255
     char b;
+    char a;
 }
 
 struct Canvas{
@@ -38,6 +39,7 @@ fn void init_sim(int width, int height) @extern("_init_sim") @wasm{
     if(canvas.pixels){
         free_canvas();
     }
+
     canvas.width = width;
     canvas.height = height;
     // canvas = Canvas{canvas.width, canvas.height, allocator::new_array(allocator::heap(), Pixel, (usz) (canvas.width*canvas.height))};

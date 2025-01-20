@@ -81,8 +81,8 @@ setInterval(() => {
 async function flatten_buffer(width, height){
     let arr = [];
     for(let idx = 0; idx < height; idx++){
-        const pixel_data = new Uint8ClampedArray(wasm.memory.buffer, wasm._get_row(idx), width*3, true);
-        for(let zdx = 0; zdx < width*3; zdx++){
+        const pixel_data = new Uint8ClampedArray(wasm.memory.buffer, wasm._get_row(idx), width*4, true);
+        for(let zdx = 0; zdx < width*4; zdx++){
             arr.push(pixel_data[zdx]);
         }
     }
@@ -103,15 +103,13 @@ async function render_buffer(){
     //     return;
     // }
     const imageData = ctx.createImageData(width, height);
-    let px = 0;
     for (let i = 0; i < imageData.data.length; i += 4) {
         
         // Modify pixel data
-        imageData.data[i + 0] = pixel_data[(px)]; // R value
-        imageData.data[i + 1] = pixel_data[((px+1))]; // G value
-        imageData.data[i + 2] = pixel_data[((px+2))]; // B value
-        imageData.data[i + 3] = 255; // A value
-        px += 3;
+        imageData.data[i + 0] = pixel_data[(i)]; // R value
+        imageData.data[i + 1] = pixel_data[(i+1)]; // G value
+        imageData.data[i + 2] = pixel_data[(i+2)]; // B value
+        imageData.data[i + 3] = pixel_data[(i+3)]; // A value
     }
     // ctx.putImageData(imageData, 0, 0);
     const bitmap = await createImageBitmap(imageData);

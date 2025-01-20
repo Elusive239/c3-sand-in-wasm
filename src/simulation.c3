@@ -87,11 +87,13 @@ fn void push_to_buffer(Pixel** pixels){
                 pixels[y][x].r = 255;
                 pixels[y][x].g = 253;
                 pixels[y][x].b = 208;
+
             }else{
                 pixels[y][x].r = 0;
                 pixels[y][x].g = 0;
                 pixels[y][x].b = 0;
             }
+            pixels[y][x].a = 255;
         }
     }
 }
