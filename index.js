@@ -29,8 +29,8 @@ async function instantiateWasmClient(url) {
         return;
     }
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
+    canvas.height = 500;
+    canvas.width = 500;
 
     const importObject = {
         env: { 
