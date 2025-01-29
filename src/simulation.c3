@@ -3,9 +3,9 @@ import noir::log;
 import noir::common;
 
 enum State : char{
-    EMPTY,
+    AIR,
+    WALL,
     SAND,
-    WALL
 }
 
 struct Particle{
@@ -38,12 +38,12 @@ fn void free_sim(){
     allocator::free(allocator::heap(), sim.new_particles);
 }
 
-fn void add_random_sand() @extern("_add_random_sand") @wasm @if(env::WASM_NOLIBC){
+fn void add_random_sand() @wasm @if(env::WASM_NOLIBC){
     int i = (int)(sim.width * common::rand());
     sim.particles[0][i].pstate = State.SAND;
 }
 
-fn void add_sand(int x, int y) @extern("_place_sand") @wasm {
+fn void add_sand(int x, int y) @wasm {
     sim.particles[y][x].pstate = State.SAND;
 }
 
@@ -65,11 +65,11 @@ fn void step(){
                 State! below = sim.get_state(x, y+1);
                 State! belowR = sim.get_state(x+1, y+1);
                 State! belowL = sim.get_state(x-1, y+1);
-                if(try below && below == State.EMPTY){
+                if(try below && below == State.AIR){
                     sim.new_particles[y+1][x].pstate = state;
-                }else if (try belowR && belowR == State.EMPTY){
+                }else if (try belowR && belowR == State.AIR){
                     sim.new_particles[y+1][x+1].pstate = state;
-                }else if (try belowL && belowL == State.EMPTY){
+                }else if (try belowL && belowL == State.AIR){
                     sim.new_particles[y+1][x-1].pstate = state;
                 }else{
                     sim.new_particles[y][x].pstate = state;
@@ -80,7 +80,7 @@ fn void step(){
         }
     }
     @swap(sim.new_particles, sim.particles);
-    for(int x = 0; x <sim.width; x++) for(int y = 0; y < sim.height; y++) sim.new_particles[y][x].pstate = State.EMPTY;
+    for(int x = 0; x <sim.width; x++) for(int y = 0; y < sim.height; y++) sim.new_particles[y][x].pstate = State.AIR;
 }
 
 fn void push_to_buffer(Pixel** pixels){

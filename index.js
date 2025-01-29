@@ -13,13 +13,9 @@ async function make_wasm(wasm_stream) {
         stream: wasm_stream,
         memory: wasm_stream.instance.exports.memory ,
         _initialize: wasm_stream.instance.exports._initialize,
-        _init: wasm_stream.instance.exports._wasm_init,
-        _free: wasm_stream.instance.exports._wasm_free,
-        _update: wasm_stream.instance.exports._wasm_update,
-        _get_pixels: wasm_stream.instance.exports._get_pixels,
-        _get_row:  wasm_stream.instance.exports._get_row,
-        _add_random_sand: wasm_stream.instance.exports._add_random_sand,
-        _place_sand: wasm_stream.instance.exports._place_sand,
+        deinit: wasm_stream.instance.exports.wasm_deinit,
+        update: wasm_stream.instance.exports.wasm_update,
+        get_buffer_row:  wasm_stream.instance.exports.get_buffer_row,
     };
 }
 
@@ -46,7 +42,6 @@ async function instantiateWasmClient(url) {
     const wasm_stream = await WebAssembly.instantiateStreaming(fetch(url), importObject);
     wasm = await make_wasm(wasm_stream);
     wasm._initialize();
-    wasm._init(canvas.width, canvas.height);  
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
     ctx.msImageSmoothingEnabled = false;
@@ -55,8 +50,7 @@ async function instantiateWasmClient(url) {
     setInterval(() => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         render_buffer();
-        wasm._update();
-        wasm._add_random_sand();
+        wasm.update();
     }, 0.01);
 
 }
@@ -68,7 +62,7 @@ async function instantiateWasmClient(url) {
 async function flatten_buffer(width, height){
     let arr = [];
     for(let idx = 0; idx < height; idx++){
-        const pixel_data = new Uint8ClampedArray(wasm.memory.buffer, wasm._get_row(idx), width*4, true);
+        const pixel_data = new Uint8ClampedArray(wasm.memory.buffer, wasm.get_buffer_row(idx), width*4, true);
         for(let zdx = 0; zdx < width*4; zdx++){
             arr.push(pixel_data[zdx]);
         }
@@ -95,7 +89,7 @@ async function render_buffer(){
 
 function unload(){
     if(wasm === null) return;
-    wasm._free();
+    wasm.deinit();
 }
 
 

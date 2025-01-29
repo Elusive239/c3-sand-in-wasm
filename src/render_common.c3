@@ -1,5 +1,9 @@
 module noir::common;
 
+const int WIDTH = 320;
+const int HEIGHT = 180;
+
+
 macro allocate_2d_array($Type, width,height){
     $Type** arr = allocator::new_array(allocator::heap(), $Type*, height);
     for(int y = 0; y < height; y++){
@@ -23,17 +27,17 @@ struct Canvas{
 
 Canvas canvas @export("canvas");
 
-fn Pixel** get_pixels() @extern("_get_pixels") @wasm{
+fn Pixel** get_pixels() @wasm{
     if(!canvas.pixels) return null;
     return canvas.pixels;
 }
 
-fn Pixel* get_row(int idx) @extern("_get_row") @wasm{
+fn Pixel* get_buffer_row(int idx) @extern("get_buffer_row") @wasm{
     if(!canvas.pixels || !canvas.pixels[idx]) return null;
     return canvas.pixels[idx];
 }
 
-fn void init_canvas(int width, int height) @extern("_init_canvas") @wasm{
+fn void init_canvas(int width, int height)  @extern("init_canvas") @wasm{
     if(canvas.pixels){
         free_canvas();
     }
