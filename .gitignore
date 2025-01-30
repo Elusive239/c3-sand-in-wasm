@@ -1,3 +1,4 @@
 build
 out.wasm
 wasm.h
+/scripts

@@ -10,6 +10,7 @@ enum State : char{
 
 struct Particle{
     State pstate;
+    // Pixel color;
 }
 
 struct Simulation{
@@ -82,22 +83,34 @@ fn void step(){
     for(int x = 0; x <sim.width; x++) for(int y = 0; y < sim.height; y++) sim.new_particles[y][x].pstate = State.AIR;
 }
 
-macro Pixel State.to_pixel(&self){
-    switch(*self){
-        case State.AIR:
-            return Pixel{0,0,0, 255};
-        case State.SAND:
-            return Pixel{255, 253, 208, 255};
-        case State.WALL:
-            return Pixel{120, 120, 120, 255};
-        default: unreachable("UNIMPLEMENTED STATE");
-    }
+macro Pixel Particle.to_pixel(self){
+    $if $defined(Particle.color):
+        return self.color;
+    $else
+        switch(self.pstate){
+            case State.AIR:
+                return Pixel{0,0,0, 255};
+            case State.SAND:
+                return Pixel{255, 253, 208, 255};
+            case State.WALL:
+                return Pixel{120, 120, 120, 255};
+            default: unreachable("UNIMPLEMENTED STATE");
+        }
+    $endif
 }
 
 fn void push_to_buffer(Pixel** pixels){
+    // DONT ITERATE ARRAYS WITH CHARS IN WASM???
     for(int y = 0; y < sim.height; y++){
         for(int x = 0; x < sim.width; x++){
-            pixels[y][x] = sim.particles[y][x].pstate.to_pixel();
+            pixels[y][x] = sim.particles[y][x].to_pixel();
+            // pixels[y][x] = Pixel{
+            //     (char) pixels[y][x].r + 1 % 255,
+            //     (char) pixels[y][x].g + 1 % 255,
+            //     (char) pixels[y][x].b + 1 % 255,
+            //     (char) 255,
+            // };
+            // sim.particles[y][x].color;
         }
     }
 }

@@ -9,23 +9,28 @@ fn void wasm_update() @extern("wasm_update") @wasm{
     simulation::add_random_sand();
 }
 
-// char[*] hourglass_walls = $embed("new_hourglass.png");
+ZString hourglass = $embed("new_hourglass_black_bg.png");
+
+macro to_1d(int x, int y){
+    return x + common::WIDTH*y;
+}
 
 fn void wasm_init() @extern("wasm_init") @wasm @init{
     common::init_canvas(common::WIDTH, common::HEIGHT);
     simulation::init(common::WIDTH, common::HEIGHT);
 
-    // int x; int y;
-    // for(int i = 0; i < common::HEIGHT * common::WIDTH * 4; i+=4){
-    //     if(hourglass_walls[i] != 0){
-    //         simulation::sim.particles[y][x].pstate = State.WALL;
-    //     }
-    //     x++;
-    //     if(x >= common::WIDTH){
-    //         y++; 
-    //         x = 0;
-    //     }
-    // }
+    $if $defined(Particle.color):
+    for(int y; y < common::HEIGHT; y++) for(int x; x < common::WIDTH; x++){
+        simulation::sim.particles[y][x].pstate = State.AIR;
+        int i = to_1d(x, y) * 4;
+        simulation::sim.particles[y][x].color = Pixel{
+            hourglass[0 + 4*i],
+            hourglass[1 + 4*i],
+            hourglass[2 + 4*i],
+            hourglass[3 + 4*i]
+        };
+    }
+    $endif
     //set inital state!
     // sim.particles[y, x].pstate = State.WALL;
 }
