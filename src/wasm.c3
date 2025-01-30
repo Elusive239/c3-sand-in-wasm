@@ -30,7 +30,7 @@ fn void wasm_init() @extern("wasm_init") @wasm @init{
     // sim.particles[y, x].pstate = State.WALL;
 }
 
-fn void wasm_free() @extern("wasm_deinit") @wasm{
+fn void wasm_deinit() @extern("wasm_deinit") @wasm{
     common::free_canvas();
     simulation::free_sim();
 }

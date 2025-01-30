@@ -38,13 +38,12 @@ fn void free_sim(){
     allocator::free(allocator::heap(), sim.new_particles);
 }
 
-fn void add_random_sand() @wasm @if(env::WASM_NOLIBC){
-    int i = (int)(sim.width * common::rand());
-    sim.particles[0][i].pstate = State.SAND;
+fn void add_random_sand() @wasm{
+    put_state((int)(sim.width * common::rand()), 0, State.SAND);
 }
 
-fn void add_sand(int x, int y) @wasm {
-    sim.particles[y][x].pstate = State.SAND;
+fn void put_state(int x, int y, State state) @wasm {
+    sim.particles[y][x].pstate = state;
 }
 
 fault SimulationFailure{
@@ -83,23 +82,22 @@ fn void step(){
     for(int x = 0; x <sim.width; x++) for(int y = 0; y < sim.height; y++) sim.new_particles[y][x].pstate = State.AIR;
 }
 
+macro Pixel State.to_pixel(&self){
+    switch(*self){
+        case State.AIR:
+            return Pixel{0,0,0, 255};
+        case State.SAND:
+            return Pixel{255, 253, 208, 255};
+        case State.WALL:
+            return Pixel{120, 120, 120, 255};
+        default: unreachable("UNIMPLEMENTED STATE");
+    }
+}
+
 fn void push_to_buffer(Pixel** pixels){
     for(int y = 0; y < sim.height; y++){
         for(int x = 0; x < sim.width; x++){
-            if(sim.particles[y][x].pstate == State.SAND){
-                pixels[y][x].r = 255;
-                pixels[y][x].g = 253;
-                pixels[y][x].b = 208;
-            }else if (sim.particles[y][x].pstate == State.WALL){
-                pixels[y][x].r = 255;
-                pixels[y][x].g = 255;
-                pixels[y][x].b = 255;
-            }else{
-                pixels[y][x].r = 0;
-                pixels[y][x].g = 0;
-                pixels[y][x].b = 0;
-            }
-            pixels[y][x].a = 255;
+            pixels[y][x] = sim.particles[y][x].pstate.to_pixel();
         }
     }
 }

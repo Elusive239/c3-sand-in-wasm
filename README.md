@@ -3,12 +3,12 @@ Its a really basic falling sand simulation written in C3 and rendered in the bro
 
 The sim was originally based on this coding challenge from [The Coding Train](https://youtu.be/L4u7Zy_b868?si=dpoe54tolq8EM0gt)
 
-To compile it, use the following command:
+To compile it for WASM, use the following command:
 ```C
-    c3c compile --reloc=none --target wasm32 -g0 --link-libc=no --no-entry src/main.c3 src/logging.c3 .\src\wasm.c3 .\src\simulation.c3 .\src\render_common.c3
+    c3c build wasm
 ```
 
-To run it I recommend using the following in the projects main directory if you have python installed:
+To run it with wasm I recommend using the following command in the projects main directory if you have python installed:
 ```Python
     python3 -m http.server
 ```

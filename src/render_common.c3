@@ -55,3 +55,10 @@ fn void free_canvas() @extern("_free_canvas") @wasm{
 }
 
 extern fn float rand() @extern("rand") @if(env::WASM_NOLIBC);
+
+import std::math::random;
+
+fn float rand() @extern("rand") @if(!env::WASM_NOLIBC){
+    float i = (float) random::rand(int.max);
+    return i / (float) int.max;
+}

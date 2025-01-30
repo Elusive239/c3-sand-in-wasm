@@ -12,6 +12,16 @@
     "proj": {
       "type": "executable",
     },
+    "wasm": {
+      "name": "out",
+      "target": "wasm32",
+      "type": "executable",
+      "reloc": "none",
+      "link-libc": false,
+      "no-entry": true, 
+      "opt": "O5",
+      "output": ".",
+    }
   },
   "cpu": "generic",
   // Optimization: "O0", "O1", "O2", "O3", "O4", "O5", "Os", "Oz".
