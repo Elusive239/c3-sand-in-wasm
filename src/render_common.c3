@@ -5,9 +5,9 @@ const int HEIGHT = 180;
 
 
 macro allocate_2d_array($Type, width,height){
-    $Type** arr = allocator::new_array(allocator::heap(), $Type*, height);
+    $Type** arr = mem::new_array($Type*, height);
     for(int y = 0; y < height; y++){
-        arr[y] = allocator::new_array(allocator::heap(), $Type, width);
+        arr[y] = mem::new_array($Type, width);
     }
     return arr;
 }
@@ -20,7 +20,8 @@ struct Pixel{
 }
 
 struct Canvas{
-    inline Pixel** pixels;
+    inline Pixel** pixels;  // the array the user actually interacts with
+    Pixel* flattened;       //the array in 1D, for rendering purposes.
     int width;
     int height;
 }
@@ -32,9 +33,13 @@ fn Pixel** get_pixels() @wasm{
     return canvas.pixels;
 }
 
-fn Pixel* get_buffer_row(int idx) @extern("get_buffer_row") @wasm{
-    if(!canvas.pixels || !canvas.pixels[idx]) return null;
-    return canvas.pixels[idx];
+fn Pixel* get_flat_buffer() @extern("get_flat_buffer") @wasm{
+    int i;
+    for(int y; y < canvas.height; y++)for(int x; x < canvas.width; x++) {
+        canvas.flattened[i] = canvas.pixels[y][x];
+        i+=1;
+    }
+    return canvas.flattened;
 }
 
 fn void init_canvas(int width, int height)  @extern("init_canvas") @wasm{
@@ -45,13 +50,15 @@ fn void init_canvas(int width, int height)  @extern("init_canvas") @wasm{
     canvas.width = width;
     canvas.height = height;
     canvas.pixels = common::allocate_2d_array(Pixel, width, height);
+    canvas.flattened = mem::new_array(Pixel, width*height);
 }
 
 fn void free_canvas() @extern("_free_canvas") @wasm{
     for(int y = 0; y < canvas.height; y++){
-        allocator::free(allocator::heap(), canvas[y]);
+        mem::free(canvas[y]);
     }
-    allocator::free(allocator::heap(), canvas.pixels);
+    mem::free(canvas.pixels);
+    mem::free(canvas.flattened);
 }
 
 extern fn float rand() @extern("rand") @if(env::WASM_NOLIBC);

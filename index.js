@@ -15,7 +15,7 @@ async function make_wasm(wasm_stream) {
         _initialize: wasm_stream.instance.exports._initialize,
         deinit: wasm_stream.instance.exports.wasm_deinit,
         update: wasm_stream.instance.exports.wasm_update,
-        get_buffer_row:  wasm_stream.instance.exports.get_buffer_row,
+        get_flat_buffer: wasm_stream.instance.exports.get_flat_buffer,
     };
 }
 
@@ -55,34 +55,10 @@ async function instantiateWasmClient(url) {
 
 }
 
-/** 
- * @param {number} width
- * @param {number} height
-*/
-async function flatten_buffer(width, height){
-    let arr = [];
-    for(let idx = 0; idx < height; idx++){
-        const pixel_data = new Uint8ClampedArray(wasm.memory.buffer, wasm.get_buffer_row(idx), width*4, true);
-        for(let zdx = 0; zdx < width*4; zdx++){
-            arr.push(pixel_data[zdx]);
-        }
-    }
-    return arr;
-}
-
 async function render_buffer(){
     const width = canvas.width;
     const height = canvas.height;
-    const pixel_data = await flatten_buffer(width, height);
-
-    const imageData = ctx.createImageData(width, height);
-    for (let i = 0; i < imageData.data.length; i += 4) {
-        // Modify pixel data
-        imageData.data[i + 0] = pixel_data[(i)]; // R value
-        imageData.data[i + 1] = pixel_data[(i+1)]; // G value
-        imageData.data[i + 2] = pixel_data[(i+2)]; // B value
-        imageData.data[i + 3] = pixel_data[(i+3)]; // A value
-    }
+    const imageData = new ImageData(new Uint8ClampedArray(wasm.memory.buffer, wasm.get_flat_buffer(), width*height*4), width, height);
     const bitmap = await createImageBitmap(imageData);
     ctx.drawImage(bitmap, 0, 0);
 }
@@ -91,7 +67,6 @@ function unload(){
     if(wasm === null) return;
     wasm.deinit();
 }
-
 
 window.onload = instantiateWasmClient("./out.wasm");
 window.onbeforeunload = unload();
