@@ -9,28 +9,31 @@ fn void wasm_update() @extern("wasm_update") @wasm{
     simulation::add_random_sand();
 }
 
-ZString hourglass = $embed("new_hourglass_black_bg.png");
 
-macro to_1d(int x, int y){
-    return x + common::WIDTH*y;
-}
 
 fn void wasm_init() @extern("wasm_init") @wasm @init{
     common::init_canvas(common::WIDTH, common::HEIGHT);
     simulation::init(common::WIDTH, common::HEIGHT);
+    ZString path= "./src/new_hourglass.png";
+    Image* img = common::load_image(path, path.len());
+    {
+        if(img == null){
+            wlog("Image is null.");
+            return;
+        }else if (img.data == null){
+            wlog("Image data is null.");
+            return;
+        }
 
-    $if $defined(Particle.color):
-    for(int y; y < common::HEIGHT; y++) for(int x; x < common::WIDTH; x++){
-        simulation::sim.particles[y][x].pstate = State.AIR;
-        int i = to_1d(x, y) * 4;
-        simulation::sim.particles[y][x].color = Pixel{
-            hourglass[0 + 4*i],
-            hourglass[1 + 4*i],
-            hourglass[2 + 4*i],
-            hourglass[3 + 4*i]
-        };
     }
-    $endif
+    img.free();
+    log("did it!");
+    // $if $defined(Particle.color):
+    // for(int y; y < common::HEIGHT; y++) for(int x; x < common::WIDTH; x++){
+    //     simulation::sim.particles[y][x].pstate = State.AIR;
+
+    // }
+    // $endif
     //set inital state!
     // sim.particles[y, x].pstate = State.WALL;
 }
@@ -38,4 +41,9 @@ fn void wasm_init() @extern("wasm_init") @wasm @init{
 fn void wasm_deinit() @extern("wasm_deinit") @wasm{
     common::free_canvas();
     simulation::free_sim();
+}
+
+
+fn void* wasm_alloc_array(usz typeSize, usz length) @extern("wasm_alloc_array") @wasm {
+    return mem::malloc(typeSize*length);
 }

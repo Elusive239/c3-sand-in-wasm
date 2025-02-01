@@ -1,8 +1,26 @@
 module noir::common;
 
+struct Image{
+    Pixel* data;
+    int width;
+    int height;
+}
+
+//uses new_image and fills that image from javascript.
+extern fn Image* load_image(ZString buffer, usz bufferLen) @extern("load_image") @if(env::WASM_NOLIBC);
+
+fn Image* new_image(Pixel* data, int width, int height) @wasm @extern("new_image"){
+    Image* newImg = mem::new(Image, Image{data, width, height});
+    return newImg;
+}
+
+fn void Image.free(Image* img){
+    mem::free(img.data);
+    mem::free(img);
+}
+
 const int WIDTH = 320;
 const int HEIGHT = 180;
-
 
 macro allocate_2d_array($Type, width,height){
     $Type** arr = mem::new_array($Type*, height);

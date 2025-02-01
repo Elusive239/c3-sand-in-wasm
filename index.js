@@ -16,6 +16,8 @@ async function make_wasm(wasm_stream) {
         deinit: wasm_stream.instance.exports.wasm_deinit,
         update: wasm_stream.instance.exports.wasm_update,
         get_flat_buffer: wasm_stream.instance.exports.get_flat_buffer,
+        alloc_array: wasm_stream.instance.exports.wasm_alloc_array,
+        new_image: wasm_stream.instance.exports.new_image,
     };
 }
 
@@ -37,6 +39,10 @@ async function instantiateWasmClient(url) {
             rand: () => {
                 return Math.random();
             },
+            load_image: (buffer, buffer_len) => {
+                const src = new TextDecoder().decode(new Uint8ClampedArray(wasm.memory.buffer, buffer, buffer_len));
+                return load_wasm_image(src);
+            }
          },
     };      
     const wasm_stream = await WebAssembly.instantiateStreaming(fetch(url), importObject);
@@ -52,7 +58,7 @@ async function instantiateWasmClient(url) {
         render_buffer();
         wasm.update();
     }, 0.01);
-
+    // await load_wasm_image("./src/new_hourglass.png");
 }
 
 async function render_buffer(){
@@ -61,6 +67,35 @@ async function render_buffer(){
     const imageData = new ImageData(new Uint8ClampedArray(wasm.memory.buffer, wasm.get_flat_buffer(), width*height*4), width, height);
     const bitmap = await createImageBitmap(imageData);
     ctx.drawImage(bitmap, 0, 0);
+}
+
+/** @param {string} src*/
+async function load_wasm_image(src){
+    let ptr = 0;
+    const img = new Image();
+    img.src = src;
+    await img.decode().then( () => {
+            console.log("%s: %s", src, img);
+            //get image data (Pixel*)
+            const width = img.width;
+            const height = img.height;
+
+            const tcanvas = document.createElement('canvas');
+            const tctx    = canvas.getContext('2d');
+            tctx.drawImage( img, 0, 0 );
+            const rgba = tctx.getImageData(0,0,width,height).data;
+
+            const elems = width*height*4;
+            const data = wasm.alloc_array(8, elems);
+            const darray = new Uint8ClampedArray(wasm.memory.buffer, data, elems);
+            darray.set(rgba);
+            ptr = wasm.new_image(data, width, height);
+            console.log(ptr);
+        } 
+    ).catch((e) => {
+        console.log("Couldn't load img %s:\n%s", src, e);
+    });
+    return ptr;
 }
 
 function unload(){
