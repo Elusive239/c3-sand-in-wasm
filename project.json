@@ -2,16 +2,23 @@
   "langrev": "1",
   "warnings": [ "no-unused" ],
   "dependency-search-paths": [ "lib" ],
-  "dependencies": [ ],
+  "dependencies": [ "stb" ],
   "authors": [ "Elusive239 <@elusive-noir.bsky.social"],
   "version": "0.1.0",
   "sources": [ "src/**", "assets/**" ],
   "test-sources": [ "test/**" ],
   "output": "build",
-  "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3"],
+  "cc": "gcc",
+  "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3; dependencies stb"],
   "targets": {
     "proj": {
       "type": "executable",
+      // "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3; dependencies stb"],
+    },
+    "proj_test": {
+      "type": "executable",
+      "sources": ["assets/**" ],
+      // "exec": [],
     },
     "wasm": {
       "name": "out",
@@ -22,6 +29,7 @@
       "no-entry": true, 
       "opt": "O5",
       "output": ".",
+      // "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3; dependencies stb"],
     }
   },
   "cpu": "generic",

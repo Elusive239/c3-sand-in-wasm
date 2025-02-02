@@ -5,7 +5,7 @@ The sim was originally based on this coding challenge from [The Coding Train](ht
 
 To compile it for WASM, use the following command:
 ```C
-    c3c build wasm
+    c3c build wasm --trust-full
 ```
 
 To run it with wasm I recommend using the following command in the projects main directory if you have python installed:
@@ -13,10 +13,14 @@ To run it with wasm I recommend using the following command in the projects main
     python3 -m http.server
 ```
 
-It can also be run as a normal C3 project. I recommend:
+It can also be run as a normal C3 project (non WASM). I recommend:
 ```C
-    c3c run
+    c3c run --trust-full
 ```
+
+# Dependencies
+
+[stb_image.h](https://github.com/nothings/stb/tree/master)
 
 # References
 
