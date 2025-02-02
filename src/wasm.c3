@@ -12,8 +12,8 @@ fn void wasm_update() @extern("wasm_update") @wasm{
 
 
 fn void wasm_init() @extern("wasm_init") @wasm @init{
-    common::init_canvas(common::WIDTH, common::HEIGHT);
-    simulation::init(common::WIDTH, common::HEIGHT);
+    common::init_canvas(simulation::WIDTH, simulation::HEIGHT);
+    simulation::init(simulation::WIDTH, simulation::HEIGHT);
     // ZString path= "./src/new_hourglass.png";
     // Image* img = common::load_image(path, path.len());
     // {
@@ -27,7 +27,7 @@ fn void wasm_init() @extern("wasm_init") @wasm @init{
     // img.free();
     log("did it!");
     // $if $defined(Particle.color):
-    // for(int y; y < common::HEIGHT; y++) for(int x; x < common::WIDTH; x++){
+    // for(int y; y < simulation::HEIGHT; y++) for(int x; x < simulation::WIDTH; x++){
     //     simulation::sim.particles[y][x].pstate = State.AIR;
 
     // }

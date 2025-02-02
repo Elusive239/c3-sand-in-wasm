@@ -2,6 +2,9 @@ module noir::simulation;
 import noir::log;
 import noir::common;
 
+const int WIDTH = 320;
+const int HEIGHT = 180;
+
 enum State : char{
     AIR,
     WALL,

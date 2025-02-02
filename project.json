@@ -5,9 +5,10 @@
   "dependencies": [ ],
   "authors": [ "Elusive239 <@elusive-noir.bsky.social"],
   "version": "0.1.0",
-  "sources": [ "src/**" ],
+  "sources": [ "src/**", "assets/**" ],
   "test-sources": [ "test/**" ],
   "output": "build",
+  "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3"],
   "targets": {
     "proj": {
       "type": "executable",
