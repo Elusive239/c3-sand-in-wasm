@@ -7,7 +7,7 @@ struct Image{
 }
 
 //uses new_image and fills that image from javascript.
-extern fn Image* load_image(ZString buffer, usz bufferLen) @extern("load_image") @if(env::WASM_NOLIBC);
+// extern fn Image* load_image(ZString buffer, usz bufferLen) @extern("load_image") @if(env::WASM_NOLIBC);
 
 fn Image* new_image(Pixel* data, int width, int height) @wasm @extern("new_image"){
     Image* newImg = mem::new(Image, Image{data, width, height});

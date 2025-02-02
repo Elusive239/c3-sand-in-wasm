@@ -14,19 +14,17 @@ fn void wasm_update() @extern("wasm_update") @wasm{
 fn void wasm_init() @extern("wasm_init") @wasm @init{
     common::init_canvas(common::WIDTH, common::HEIGHT);
     simulation::init(common::WIDTH, common::HEIGHT);
-    ZString path= "./src/new_hourglass.png";
-    Image* img = common::load_image(path, path.len());
-    {
-        if(img == null){
-            wlog("Image is null.");
-            return;
-        }else if (img.data == null){
-            wlog("Image data is null.");
-            return;
-        }
+    // ZString path= "./src/new_hourglass.png";
+    // Image* img = common::load_image(path, path.len());
+    // {
+    //     if(img == null){
+    //         wlog("Image is null.");
+    //     }else if (img.data == null){
+    //         wlog("Image data is null.");
+    //     }
 
-    }
-    img.free();
+    // }
+    // img.free();
     log("did it!");
     // $if $defined(Particle.color):
     // for(int y; y < common::HEIGHT; y++) for(int x; x < common::WIDTH; x++){
