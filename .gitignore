@@ -1,7 +1,6 @@
 build
 out.wasm
 wasm.h
-/scripts
 *.obj
 lib/stb.c3l/stb_image.o
 assets/assets.c3
