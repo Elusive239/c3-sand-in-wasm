@@ -1,8 +1,7 @@
 {
     "provides": "stb",
-    "c-sources" : ["stb_image.c"],
-    "cflags": "-fPIE",
-    // "exec": ["gcc ./lib/stb.c3l/stb_image.c -c -o ./lib/stb.c3l/stb_image.o"],
+    "c-sources" : ["./csources/**"],
+    "cflags": "/c",
     "targets" : {
         "wasm32": {}, //requires no standard library
         "wasm64": {}, //requires no standard library
@@ -10,6 +9,7 @@
         "windows-x64": {},
     }
 }
+// "exec": ["gcc ./lib/stb.c3l/stb_image.c -c -o ./lib/stb.c3l/stb_image.o"],
 
 /*
        "android-aarch64": {},

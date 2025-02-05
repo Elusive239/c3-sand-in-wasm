@@ -1,24 +1,28 @@
 {
   "langrev": "1",
   "warnings": [ "no-unused" ],
-  "dependency-search-paths": [ "lib" ],
-  "dependencies": [ "stb" ],
   "authors": [ "Elusive239 <@elusive-noir.bsky.social"],
   "version": "0.1.0",
-  "sources": [ "src/**", "assets/**" ],
+  "sources": [ "src/**"],//, "assets/**" ],
   "test-sources": [ "test/**" ],
   "output": "build",
-  "cc": "gcc",
-  "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3; dependencies stb"],
+  "cc": "CL",
   "targets": {
     "proj": {
       "type": "executable",
-      // "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3; dependencies stb"],
+      "exec": ["c3c run packer"],
     },
-    "proj_test": {
+    "packer":{
+      "dependencies": [ "stb" ],
+      "dependency-search-paths": [ "lib" ],
       "type": "executable",
-      "sources": ["assets/**" ],
-      // "exec": [],
+      "name": "packer",
+      "opt": "O5",
+      // "output": "./scripts",
+      "sources-override": [ "scripts/**", "src/logging.c3", "src/render_common.c3"],
+      "output": "build",
+      // "exec": ["pwd"],
+      // "exec": ["CL -I . -fPIC -c stb_image.c -o stb_image.obj"],
     },
     "wasm": {
       "name": "out",
@@ -29,7 +33,7 @@
       "no-entry": true, 
       "opt": "O5",
       "output": ".",
-      // "exec": ["pack.c3;../src/logging.c3;../src/render_common.c3; dependencies stb"],
+      "exec": ["c3c run packer"],
     }
   },
   "cpu": "generic",
