@@ -7,12 +7,7 @@
         "wasm64": {}, //requires no standard library
         "windows-aarch64": {},
         "windows-x64": {},
-    }
-}
-// "exec": ["gcc ./lib/stb.c3l/stb_image.c -c -o ./lib/stb.c3l/stb_image.o"],
-
-/*
-       "android-aarch64": {},
+        "android-aarch64": {},
         "elf-aarch64": {},
         "elf-riscv32": {},
         "elf-riscv64": {},
@@ -35,4 +30,5 @@
         "netbsd-x64": {},
         "openbsd-x86": {},
         "openbsd-x64": {},
-*/
+    }
+}
