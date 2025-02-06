@@ -17,7 +17,6 @@ async function make_wasm(wasm_stream) {
         update: wasm_stream.instance.exports.wasm_update,
         get_flat_buffer: wasm_stream.instance.exports.get_flat_buffer,
         alloc_array: wasm_stream.instance.exports.wasm_alloc_array,
-        // new_image: wasm_stream.instance.exports.new_image,
     };
 }
 
@@ -39,6 +38,13 @@ async function instantiateWasmClient(url) {
             rand: () => {
                 return Math.random();
             },
+            set_js_dimensions: (width, height) =>{
+                canvas.height = height;
+                canvas.width = width;
+            },
+            get_js_width: () =>  {return canvas.width},
+            get_js_height: () => {return canvas.height},
+
             // load_image: (buffer, buffer_len) => {
             //     const src = new TextDecoder().decode(new Uint8ClampedArray(wasm.memory.buffer, buffer, buffer_len));
             //     return load_wasm_image(src);
@@ -58,7 +64,6 @@ async function instantiateWasmClient(url) {
         render_buffer();
         wasm.update();
     }, 0.01);
-    // await load_wasm_image("./src/new_hourglass.png");
 }
 
 async function render_buffer(){
@@ -69,40 +74,11 @@ async function render_buffer(){
     ctx.drawImage(bitmap, 0, 0);
 }
 
-// /** @param {string} src*/
-// function load_wasm_image(src){
-//     const img = new Image();
-//     img.decoding = "sync";
-//     img.src = src;
-//     img.decode() //.then( () => {console.log("%s: %s", src, img);} )
-//     .catch((e) => {
-//         console.log("Couldn't load img %s:\n%s", src, e);
-//     });
-//     // while(!img.complete);
-//     const width = img.width;
-//     const height = img.height;
-//     const tcanvas = document.createElement('canvas');
-//     tcanvas.width = width;
-//     tcanvas.height = height;
-//     const tctx    = tcanvas.getContext('2d');
-//     tctx.drawImage( img, 0, 0 );
-//     if(!(width == 0 || height ==0)){
-//         console.log("Image loaded..");
-//         const rgba = tctx.getImageData(0,0,width,height).data;
-//         const elems = width*height*4;
-//         const data = wasm.alloc_array(8, elems);
-//         const darray = new Uint8ClampedArray(wasm.memory.buffer, data, elems);
-//         darray.set(rgba);
-//         const ptr = wasm.new_image(data, width, height);
-//         return ptr;
-//     }return 0;
-// }
-
 function unload(){
     if(wasm === null) return;
     wasm.deinit();
 }
 
-window.onload = instantiateWasmClient("./out.wasm");
+window.onload = instantiateWasmClient("./build/wasm/out.wasm");
 window.onbeforeunload = unload();
 window.onunload = unload();

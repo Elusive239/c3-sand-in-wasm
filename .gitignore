@@ -4,3 +4,4 @@ wasm.h
 *.obj
 lib/stb.c3l/stb_image.o
 assets/assets.c3
+/scripts
