@@ -27,10 +27,12 @@ Second, you may have to modify the project [json](./project.json) to use *your* 
 
 replacing CL with the shorthand for your compiler.
 
-Before compiling the project, I recommend running the asset packer:
+Before compiling the main project, I recommend running the asset packer:
 ```C
     c3c run packer
 ```
+
+Currently the assets its packing aren't used, but im planning on using it to fulfill goal #4.
 
 To compile it for WASM, use the following command:
 ```C
@@ -44,7 +46,7 @@ To actually run it with wasm I recommend using the following command in the proj
 
 It can also be run as a normal C3 project (non WASM). I recommend:
 ```C
-    c3c run
+    c3c run proj
 ```
 
 # Dependencies
