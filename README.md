@@ -22,7 +22,7 @@ First, make sure you've correctly installed the C3 compiler/build system, and th
 
 Second, you may have to modify the project [json](./project.json) to use *your* C compiler.  To do this, modify the following:
 ```JSON
-"cc": "CL",
+    "cc": "CL",
 ```
 
 replacing CL with the shorthand for your compiler.
