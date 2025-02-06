@@ -57,8 +57,8 @@ macro void full_log(LogType type, LoggerOut stream, String fmt, args...)@private
     @pool(){
         DString str = dstring::temp_with_capacity(type.log_prefix.len + fmt.len + args.len * 8);
         if(type != LogType.NONE) str.append(type.log_prefix);
-	    str.appendf(fmt, ...args);
-        str.appendfn(" [%s]",$$TIME);
+	    str.appendfn(fmt, ...args);
+        // str.appendfn(" [%s]",$$TIME);
         $switch
             $case env::WASM_NOLIBC: 
                 String ret_str = str.str_view().copy();

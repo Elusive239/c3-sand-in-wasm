@@ -3,7 +3,7 @@ import noir::log;
 import noir::common;
 import std::io::file;
 import std::io::path;
-import stb;
+import stbi;
 
 macro void DString.append_asset_template (DString* packedFile, moduleName) => packedFile.appendfn("module %s;\nimport noir::common;\n", moduleName);
 
@@ -85,7 +85,8 @@ macro save_as_string(Path path, DString* packedFile){
 
 macro void save_as_pixels(Path path, DString* packedFile){
     int width, height, channels;
-    char* loadedImage = stb::stbi_load(path.path_string.zstr_tcopy(), &width, &height, &channels, 0);
+    char* loadedImage = stbi::load(path.path_string.zstr_tcopy(), &width, &height, &channels, 0);
+    defer stbi::image_free(loadedImage);
     if(loadedImage == null){
         wlog("Unable to read %s", path.path_string);
         return;

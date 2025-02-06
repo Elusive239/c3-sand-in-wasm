@@ -12,7 +12,7 @@ async function make_wasm(wasm_stream) {
     return {
         stream: wasm_stream,
         memory: wasm_stream.instance.exports.memory ,
-        _initialize: wasm_stream.instance.exports._initialize,
+        initialize: wasm_stream.instance.exports._initialize,
         deinit: wasm_stream.instance.exports.wasm_deinit,
         update: wasm_stream.instance.exports.wasm_update,
         get_flat_buffer: wasm_stream.instance.exports.get_flat_buffer,
@@ -42,18 +42,11 @@ async function instantiateWasmClient(url) {
                 canvas.height = height;
                 canvas.width = width;
             },
-            get_js_width: () =>  {return canvas.width},
-            get_js_height: () => {return canvas.height},
-
-            // load_image: (buffer, buffer_len) => {
-            //     const src = new TextDecoder().decode(new Uint8ClampedArray(wasm.memory.buffer, buffer, buffer_len));
-            //     return load_wasm_image(src);
-            // }
          },
     };      
     const wasm_stream = await WebAssembly.instantiateStreaming(fetch(url), importObject);
     wasm = await make_wasm(wasm_stream);
-    wasm._initialize();
+    wasm.initialize();
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
     ctx.msImageSmoothingEnabled = false;
