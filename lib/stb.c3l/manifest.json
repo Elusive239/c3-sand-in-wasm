@@ -1,7 +1,7 @@
 {
     "provides": "stb",
     "c-sources" : ["./csources/**"],
-    "cflags": "/c",
+    "cflags": "/c /Fo./build/tmp/stb/",
     "targets" : {
         "wasm32": {}, //requires no standard library
         "wasm64": {}, //requires no standard library

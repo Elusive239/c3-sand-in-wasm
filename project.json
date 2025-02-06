@@ -11,6 +11,7 @@
     "proj": {
       "type": "executable",
       // "exec": ["c3c run packer"],
+      "output": "build/main",
     },
     "packer":{
       "dependencies": [ "stb" ],
@@ -19,7 +20,7 @@
       "name": "packer",
       "opt": "O5",
       "sources-override": [ "src/packer/pack.c3", "src/common/**"],
-      "output": "build/stb",
+      "output": "build/packer",
     },
     "wasm": {
       "name": "out",
