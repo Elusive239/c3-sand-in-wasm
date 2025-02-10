@@ -17,6 +17,8 @@ async function make_wasm(wasm_stream) {
         update: wasm_stream.instance.exports.wasm_update,
         get_flat_buffer: wasm_stream.instance.exports.get_flat_buffer,
         alloc_array: wasm_stream.instance.exports.wasm_alloc_array,
+        set_mouse_pos: wasm_stream.instance.exports.set_mouse_pos,
+        set_mouse_button: wasm_stream.instance.exports.set_mouse_button,
     };
 }
 
@@ -38,6 +40,9 @@ async function instantiateWasmClient(url) {
             rand: () => {
                 return Math.random();
             },
+            sqrt: (num) => {
+                return Math.sqrt(num);
+            },
             set_js_dimensions: (width, height) =>{
                 canvas.height = height;
                 canvas.width = width;
@@ -57,6 +62,10 @@ async function instantiateWasmClient(url) {
         render_buffer();
         wasm.update();
     }, 0.01);
+    // canvas.onmousemove = handleMouseMove(e);
+    addEventListener("mousemove", (event) => {getMousePos(event);});
+    addEventListener("mouseup", (event) => {wasm.set_mouse_button(event.buttons);});
+    addEventListener("mousedown", (event) => {wasm.set_mouse_button(event.buttons);});
 }
 
 async function render_buffer(){
@@ -70,6 +79,13 @@ async function render_buffer(){
 function unload(){
     if(wasm === null) return;
     wasm.deinit();
+}
+
+function getMousePos(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width;
+    const y = ((evt.pageY - rect.top) / (rect.bottom - rect.top) * canvas.height) - window.scrollY;
+    wasm.set_mouse_pos(x, y);
 }
 
 window.onload = instantiateWasmClient("./build/wasm/out.wasm");

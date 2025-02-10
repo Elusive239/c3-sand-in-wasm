@@ -18,9 +18,13 @@ struct Canvas{
     Pixel* flattened;       //the array in 1D, for rendering purposes.
     int width;
     int height;
+    int[<2>] mouseCoords;
+    uint mouseButton;
 }
 
 tlocal Canvas canvas;
+
+fn Canvas* get_canvas() => &canvas;
 
 fn int get_width (){
     return canvas.width;
