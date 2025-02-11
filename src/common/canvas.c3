@@ -20,6 +20,7 @@ struct Canvas{
     int height;
     int[<2>] mouseCoords;
     uint mouseButton;
+    bool[5] mouseButtonPressedThisFrame;
 }
 
 tlocal Canvas canvas;

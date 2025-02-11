@@ -18,7 +18,8 @@ async function make_wasm(wasm_stream) {
         get_flat_buffer: wasm_stream.instance.exports.get_flat_buffer,
         alloc_array: wasm_stream.instance.exports.wasm_alloc_array,
         set_mouse_pos: wasm_stream.instance.exports.set_mouse_pos,
-        set_mouse_button: wasm_stream.instance.exports.set_mouse_button,
+        set_mouse_button_up: wasm_stream.instance.exports.set_mouse_button_up,
+        set_mouse_button_down: wasm_stream.instance.exports.set_mouse_button_down,
     };
 }
 
@@ -64,8 +65,8 @@ async function instantiateWasmClient(url) {
     }, 0.01);
     // canvas.onmousemove = handleMouseMove(e);
     addEventListener("mousemove", (event) => {getMousePos(event);});
-    addEventListener("mouseup", (event) => {wasm.set_mouse_button(event.buttons);});
-    addEventListener("mousedown", (event) => {wasm.set_mouse_button(event.buttons);});
+    addEventListener("mouseup", (event) => {wasm.set_mouse_button_up(event.buttons);});
+    addEventListener("mousedown", (event) => {wasm.set_mouse_button_down(event.buttons);});
 }
 
 async function render_buffer(){
