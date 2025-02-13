@@ -35,7 +35,7 @@ fn int get_height(){
     return canvas.height;
 }
 
-fn Pixel** get_pixels() @wasm{
+fn Pixel** get_pixels() @extern("get_pixels") @wasm{
     if(!canvas.pixels) return null;
     return canvas.pixels;
 }
@@ -65,7 +65,7 @@ fn void init_canvas(int width, int height)  @extern("init_canvas") @wasm{
     canvas.flattened = mem::new_array(Pixel, (usz)(width*height));
 }
 
-fn void free_canvas() @extern("_free_canvas") @wasm{
+fn void free_canvas() @extern("free_canvas"){
     for(int y = 0; y < canvas.height; y++){
         mem::free(canvas[y]);
     }

@@ -42,11 +42,11 @@ fn void free_sim(){
     allocator::free(allocator::heap(), sim.new_particles);
 }
 
-fn void add_random_sand() @wasm{
+fn void add_random_sand(){
     put_state((int)(sim.width * common::rand()), 0, State.SAND);
 }
 
-fn void put_state(int x, int y, State state) @wasm {
+fn void put_state(int x, int y, State state) {
     sim.particles[y][x].pstate = state;
 }
 
@@ -61,7 +61,7 @@ fn State! Simulation.get_state(&self,int x, int y){
 }
 
 fn void step(){
-    for(int y = 0; y < sim.height; y++){
+    for(int y = sim.height-1; y > 0; y--){
         for(int x = 0; x < sim.width; x++){
             State state = sim.get_state(x, y)!!;
             if(state == State.SAND){

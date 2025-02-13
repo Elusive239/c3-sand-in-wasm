@@ -31,7 +31,7 @@
       "no-entry": true, 
       "opt": "O5",
       "output": "build/wasm",
-      "sources-override": [ "src/wasm/wasm.c3", "src/simulation.c3","src/common/**", "assets/**"],
+      "sources-override": [ "src/app.c3", "src/simulation.c3","src/common/**", "assets/**"],
       // "exec": ["c3c run packer"],
     }
   },

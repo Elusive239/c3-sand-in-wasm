@@ -1,6 +1,9 @@
 module noir::common;
 import noir::log;
 
+extern fn void js_clear_canvas()@wasm @extern("clear_canvas") ;
+extern fn void js_render(Pixel* data, int width, int height)@wasm @extern("render") ;
+
 fn void render_pixels(Pixel* data, int width, int height, int xOffs =0, int yOffs=0){
     // DONT ITERATE ARRAYS WITH CHARS IN WASM??? (Broke Stuff)
     int i = 0;
