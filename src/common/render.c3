@@ -1,7 +1,8 @@
-module noir::common;
+module noir::common::renderer;
+import noir::common::canvas;
 import noir::log;
 
-fn void clear_canvas(){
+fn void clear_canvas(Canvas* canvas){
     for(int y = 0; y < canvas.height; y++){
         for(int x = 0; x < canvas.width; x++){
             canvas.pixels[y][x] = {};
@@ -9,20 +10,26 @@ fn void clear_canvas(){
     }
 }
 
-extern fn void js_render(Pixel* data, int width, int height)@wasm @extern("render") ;
+fn void render(Pixel* data, int width, int height){
+    $if(env::WASM_NOLIBC):
+    js_render(data, width, height);
+    $endif
+}
 
-fn void render_pixels(Pixel* data, int width, int height, int xOffs =0, int yOffs=0){
+extern fn void js_render(Pixel* data, int width, int height)@wasm @extern("render");
+
+fn void render_pixels(Canvas* canvas, Pixel* data, int width, int height, int xOffs =0, int yOffs=0){
     // DONT ITERATE ARRAYS WITH CHARS IN WASM??? (Broke Stuff)
     int i = 0;
     for(int y = 0; y < height; y++){
         int dy = y + yOffs;
-        if(dy > get_height() || dy < 0){
+        if(dy > canvas.height || dy < 0){
             i += width;
             continue;
         }
         for(int x = 0; x < width; x++){
             int dx = x + xOffs;
-            if(dx > get_width() || dx < 0){
+            if(dx > canvas.width || dx < 0){
                 i += 1;
                 continue;
             }
@@ -31,20 +38,20 @@ fn void render_pixels(Pixel* data, int width, int height, int xOffs =0, int yOff
     }
 }
 
-fn void render_image(Image image, int xOffs =0, int yOffs=0){
-    render_pixels(image.data, image.width,image.height, xOffs, yOffs);
+fn void render_image(Canvas* canvas, Image image, int xOffs =0, int yOffs=0){
+    render_pixels(canvas, image.data, image.width,image.height, xOffs, yOffs);
 }
 
-fn void render_rect(Pixel color, int width, int height, int xOffs =0, int yOffs=0) => @pool(){
+fn void render_rect(Canvas* canvas, Pixel color, int width, int height, int xOffs =0, int yOffs=0) => @pool(){
     Pixel* rect = allocator::new_array(allocator::temp(), Pixel, width*height);
     for(int i = 0 ; i < width*height; i++){
         rect[i] = color;
     }
-    render_pixels(rect, width, height, xOffs,yOffs);
+    render_pixels(canvas, rect, width, height, xOffs,yOffs);
 };
 
 // https://www.csharp-console-examples.com/general/draw-a-circle-in-c-console-application/
-fn void render_circle(Pixel color, int radius, int thickness = 1, int xOffs =0, int yOffs=0) => @pool(){
+fn void render_circle(Canvas* canvas, Pixel color, int radius, int thickness = 1, int xOffs =0, int yOffs=0) => @pool(){
     int diameter = radius*radius;
     Pixel* circle = allocator::new_array(allocator::temp(), Pixel, diameter*diameter);
     int i,j;
@@ -65,5 +72,5 @@ fn void render_circle(Pixel color, int radius, int thickness = 1, int xOffs =0, 
             index++;
         }
     }
-    render_pixels(circle, diameter, diameter, xOffs,yOffs);
+    render_pixels(canvas, circle, diameter, diameter, xOffs,yOffs);
 };

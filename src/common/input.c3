@@ -2,13 +2,16 @@ module noir::common::input;
 import noir::common;
 
 //currently assumes WASM
+tlocal int[<2>] mouseCoords;
+tlocal uint mouseButton;
+tlocal bool[5] mouseButtonPressedThisFrame;
 
 fn void set_mouse_pos(int x, int y)@wasm @extern("set_mouse_pos") {
-    common::get_canvas().mouseCoords = int[<2>]{x, y};
+    mouseCoords = int[<2>]{x, y};
 }
 
 fn int[<2>] mouse_pos() {
-    return common::get_canvas().mouseCoords;
+    return mouseCoords;
 }
 
 /*
@@ -25,23 +28,23 @@ fn void set_mouse_button_up(uint mbutton) @wasm @extern("set_mouse_button_up"){
     for(int i = 0 ; i < MouseButton.NONE.ordinal; i++){
         bool thisFrame = (MBUTTONS[i].v & mbutton) == MBUTTONS[i].v;
         if (!thisFrame){
-            common::get_canvas().mouseButtonPressedThisFrame[i] = false;
+            mouseButtonPressedThisFrame[i] = false;
         }
     }
-    common::get_canvas().mouseButton = mbutton;
+    mouseButton = mbutton;
 }
 
 fn void set_mouse_button_down(uint mbutton) @wasm @extern("set_mouse_button_down"){
     const MouseButton[] MBUTTONS = MouseButton.values;
     for(int i = 0 ; i < MouseButton.NONE.ordinal; i++){
-        bool lastFrame = common::get_canvas().mouseButtonPressedThisFrame[i];
+        bool lastFrame = mouseButtonPressedThisFrame[i];
         bool thisFrame = (MBUTTONS[i].v & mbutton) == MBUTTONS[i].v;
         if (thisFrame && !lastFrame){
-            common::get_canvas().mouseButtonPressedThisFrame[i] = true;
+            mouseButtonPressedThisFrame[i] = true;
         }
     }
 
-    common::get_canvas().mouseButton = mbutton;
+    mouseButton = mbutton;
 }
 
 enum MouseButton : int (uint v){
@@ -60,7 +63,7 @@ macro mouse_browser_back()      => get_mouse(MouseButton.BROWSER_BACK);
 macro mouse_browser_forward()   => get_mouse(MouseButton.BROWSER_FORWARD);
 
 fn bool get_mouse(MouseButton mbutton){
-    return (mbutton.v & common::get_canvas().mouseButton) == mbutton.v;
+    return (mbutton.v & mouseButton) == mbutton.v;
 }
 
 macro mouse_left_once_frame()            => get_mouse_once_frame(MouseButton.PRIMARY);
@@ -73,8 +76,8 @@ macro mouse_browser_forward_once_frame() => get_mouse_once_frame(MouseButton.BRO
     @require mbutton != MouseButton.NONE
 *>
 fn bool get_mouse_once_frame(MouseButton mbutton){
-    if(common::get_canvas().mouseButtonPressedThisFrame[mbutton.ordinal]){
-        common::get_canvas().mouseButtonPressedThisFrame[mbutton.ordinal] = false;
+    if(mouseButtonPressedThisFrame[mbutton.ordinal]){
+        mouseButtonPressedThisFrame[mbutton.ordinal] = false;
         return true;
     }
     return false;

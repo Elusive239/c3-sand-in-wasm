@@ -1,4 +1,4 @@
-module noir::common;
+module noir::common::canvas;
 import noir::log;
 import std::io;
 
@@ -42,29 +42,14 @@ struct Canvas{
     Pixel* flattened;       //the array in 1D, for rendering purposes.
     int width;
     int height;
-    int[<2>] mouseCoords;
-    uint mouseButton;
-    bool[5] mouseButtonPressedThisFrame;
 }
 
-tlocal Canvas canvas;
-
-fn Canvas* get_canvas() => &canvas;
-
-fn int get_width (){
-    return canvas.width;
-}
-
-fn int get_height(){
-    return canvas.height;
-}
-
-fn Pixel** get_pixels() @extern("get_pixels") @wasm{
+fn Pixel** Canvas.get_pixels(&canvas) @extern("get_pixels") @wasm{
     if(!canvas.pixels) return null;
     return canvas.pixels;
 }
 
-fn Pixel* get_flat_buffer() @extern("get_flat_buffer") @wasm{
+fn Pixel* Canvas.get_flat_buffer(&canvas) @extern("get_flat_buffer") @wasm{
     int i;
     for(int y; y < canvas.height; y++)for(int x; x < canvas.width; x++) {
         canvas.flattened[i] = canvas.pixels[y][x];
@@ -73,9 +58,9 @@ fn Pixel* get_flat_buffer() @extern("get_flat_buffer") @wasm{
     return canvas.flattened;
 }
 
-fn void init_canvas(int width, int height)  @extern("init_canvas") @wasm{
+fn void Canvas.init_canvas(&canvas, int width, int height)  @extern("init_canvas") @wasm{
     if(canvas.pixels){
-        free_canvas();
+        canvas.free_canvas();
     }
     $if env::WASM_NOLIBC:
         set_js_dimensions(width, height);
@@ -89,9 +74,9 @@ fn void init_canvas(int width, int height)  @extern("init_canvas") @wasm{
     canvas.flattened = mem::new_array(Pixel, (usz)(width*height));
 }
 
-fn void free_canvas() @extern("free_canvas"){
+fn void Canvas.free_canvas(&canvas) @extern("free_canvas"){
     for(int y = 0; y < canvas.height; y++){
-        mem::free(canvas[y]);
+        mem::free(canvas.pixels[y]);
     }
     mem::free(canvas.pixels);
     mem::free(canvas.flattened);
