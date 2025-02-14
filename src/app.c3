@@ -33,7 +33,8 @@ fn void app_update(double dt) @extern("app_update") @wasm{
     }
     common::render_image(assets::new_hourglass_black_bg, 0,0 );
     simulation::push_to_buffer(common::get_pixels());
-    common::render_rect({255, 255, 255, 100}, 10, 10, ...mousePos);
+    int size = 3;
+    common::render_rect({255, 255, 255, 100}, size, size, ...mousePos - size/2);
     common::js_render(common::get_flat_buffer(), 320, 180);
 }
 
