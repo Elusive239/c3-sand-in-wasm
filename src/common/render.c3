@@ -1,7 +1,14 @@
 module noir::common;
 import noir::log;
 
-extern fn void js_clear_canvas()@wasm @extern("clear_canvas") ;
+fn void clear_canvas(){
+    for(int y = 0; y < canvas.height; y++){
+        for(int x = 0; x < canvas.width; x++){
+            canvas.pixels[y][x] = {};
+        }
+    }
+}
+
 extern fn void js_render(Pixel* data, int width, int height)@wasm @extern("render") ;
 
 fn void render_pixels(Pixel* data, int width, int height, int xOffs =0, int yOffs=0){
@@ -19,7 +26,7 @@ fn void render_pixels(Pixel* data, int width, int height, int xOffs =0, int yOff
                 i += 1;
                 continue;
             }
-            canvas.pixels[dy][dx] = data[i++];
+            canvas.pixels[dy][dx].blend(data[i++]);
         }
     }
 }

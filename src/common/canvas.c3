@@ -3,14 +3,38 @@ import noir::log;
 import std::io;
 
 struct Pixel (Printable){
-	char r;
+    char r;
     char g;
     char b;
     char a;
 }
 
+// FOUND A BUG IN PARSER MISSING THIS FEATURE!
+// REPORTED TO AND FIXED BY LERNO 2/13/2025!
+// bitstruct Pixel (Printable): uint{
+//     char r : 0..7;
+//     char g : 8..15;
+//     char b : 16..23;
+//     char a : 24..31;
+// }
+
+macro bool Pixel.match(&pixel, Pixel other){
+    return pixel.r == other.r && pixel.g == other.g && pixel.b == other.b && pixel.a == other.a;
+}
+
 fn String Pixel.to_string(&pixel, Allocator allocator = allocator::heap()) @dynamic{
     return string::format("{%d, %d, %d, %d}",pixel.r, pixel.g, pixel.b, pixel.a, allocator: allocator);
+}
+
+// yoinked from tsodings olive.c library
+// https://youtu.be/aKnl8-qifvE?si=aSExOfPFCW1VV5ID
+fn void Pixel.blend(&self, Pixel other){
+    self.r = (self.r*(255 - other.a) + other.r*other.a)/255; 
+    if (self.r > 255) self.r = 255;
+    self.g = (self.g*(255 - other.a) + other.g*other.a)/255; 
+    if (self.g > 255) self.g = 255;
+    self.b = (self.b*(255 - other.a) + other.b*other.a)/255; 
+    if (self.b > 255) self.b = 255;
 }
 
 struct Canvas{

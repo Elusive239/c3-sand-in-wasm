@@ -106,7 +106,12 @@ fn void push_to_buffer(Pixel** pixels){
     // DONT ITERATE ARRAYS WITH CHARS IN WASM???
     for(int y = 0; y < sim.height; y++){
         for(int x = 0; x < sim.width; x++){
+            // if(!(pixels[y][x].match(Pixel{0,0,0,255}) || pixels[y][x].a == 0)){
+            //     pixels[y][x].blend(sim.particles[y][x].to_pixel());
+            //     continue;
+            // }
             pixels[y][x] = sim.particles[y][x].to_pixel();
+
             // pixels[y][x] = Pixel{
             //     (char) pixels[y][x].r + 1 % 255,
             //     (char) pixels[y][x].g + 1 % 255,

@@ -6,25 +6,35 @@ import noir::common::input;
 import noir::assets;
 
 fn void app_update(double dt) @extern("app_update") @wasm{
-    common::js_clear_canvas();
-    log("DT: %f", dt);
-    // simulation::add_random_sand();
+    common::clear_canvas();
     int[<2>] mousePos = input::mouse_pos();
-    // if(common::mouse_left()) common::render_rect({255, 255, 255, 100}, 10, 10, ...mousePos);
-    // if(common::mouse_left()) common::render_circle({255, 255, 255, 100},5, 6, ...mousePos);
     simulation::step();
     if(input::mouse_left())
-    // if(input::mouse_left_once_frame())
     {
+        const int RADIUS = 8;
+        int dx = mousePos.x - RADIUS/2;
+        int dy = mousePos.y - RADIUS/2;
+        dx = dx < 0 ? 0 : (dx >= simulation::WIDTH ? simulation::WIDTH-1 : dx);
+        dy = dy < 0 ? 0 : (dy >= simulation::HEIGHT ? simulation::HEIGHT-1 : dy);
+        
+        int ex = dx + RADIUS >= simulation::WIDTH ? simulation::WIDTH-1 : dx + RADIUS;
+        int ey = dy + RADIUS>= simulation::HEIGHT ? simulation::HEIGHT-1 : dy + RADIUS;
+
+        for(int y = dy ; y < ey; y++ ){
+            for(int x =  dx; x < ex; x++ ){
+                simulation::put_state(x, y, State.SAND);
+            }
+        }
+
         // log("x: %d y: %d" , ...mousePos);
-        mousePos.x = mousePos.x < 0 ? 0 : (mousePos.x >= simulation::WIDTH ? simulation::WIDTH-1 : mousePos.x);
-        mousePos.y = mousePos.y < 0 ? 0 : (mousePos.y >= simulation::HEIGHT ? simulation::HEIGHT-1 : mousePos.y);
-        simulation::put_state(...mousePos, State.SAND);
-        common::render_rect({255, 255, 255, 150}, 2, 2, ...mousePos);
+
+        // simulation::put_state(...mousePos, State.SAND);
+        // common::render_rect({255, 255, 255, 150}, 2, 2, ...mousePos);
     }
+    common::render_image(assets::new_hourglass_black_bg, 0,0 );
     simulation::push_to_buffer(common::get_pixels());
+    common::render_rect({255, 255, 255, 100}, 10, 10, ...mousePos);
     common::js_render(common::get_flat_buffer(), 320, 180);
-    // common::render_image(assets::new_hourglass_black_bg, -common::get_width()/4, common::get_height()/4);
 }
 
 fn void app_init() @extern("app_init") @wasm @init{
@@ -39,6 +49,9 @@ fn void app_deinit() @extern("app_deinit") @wasm{
     common::free_canvas();
     simulation::free_sim();
 }
+
+fn void _app_deinit() @if(!env::WASM_NOLIBC) @finalizer @private => app_deinit();
+
 
 module noir;
 import std::io;

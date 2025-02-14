@@ -5,6 +5,7 @@ if(canvas === null){
     alert("Create a canvas dumbass.");
 }
 const ctx = canvas.getContext('2d');
+let lastTime = 0;
 
 /** @param {string} url*/
 async function startWasmClient(url) {
@@ -18,7 +19,6 @@ async function startWasmClient(url) {
             rand: () => Math.random(),
             sqrt: (num) => Math.sqrt(num),
             set_js_dimensions: (width, height) =>{[canvas.height,canvas.width]  = [height, width];},
-            clear_canvas: ()=> { ctx.clearRect(0, 0, canvas.width, canvas.height); },
             render: (ptr, width, height) => {
                 const imageData = new ImageData(new Uint8ClampedArray(wasm.memory.buffer, ptr, width*height*4), width, height);
                 createImageBitmap(imageData).then(
@@ -45,17 +45,12 @@ async function startWasmClient(url) {
     ctx.msImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
     
-    // setInterval(() => {
-    //     wasm.app_update();
-    // }, 0.01);
-    // canvas.onmousemove = handleMouseMove(e);
     window.requestAnimationFrame(js_app_update);
     addEventListener("mousemove", (event) => {pollMousePos(event);});
     addEventListener("mouseup", (event) => {wasm.set_mouse_button_up(event.buttons);});
     addEventListener("mousedown", (event) => {wasm.set_mouse_button_down(event.buttons);});
 }
 
-let lastTime = 0;
 
 function js_app_update(time){
     const delta = time - lastTime;

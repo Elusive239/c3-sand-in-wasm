@@ -1,6 +1,5 @@
 module noir::packer;
 import noir::log;
-import noir::common;
 import std::io::file;
 import std::io::path;
 import stbi;

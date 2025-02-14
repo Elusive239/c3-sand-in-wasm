@@ -19,7 +19,7 @@
       "type": "executable",
       "name": "packer",
       "opt": "O5",
-      "sources-override": [ "src/packer/pack.c3", "src/common/**"],
+      "sources-override": [ "src/packer/pack.c3", "src/common/logging.c3"],
       "output": "build/packer",
     },
     "wasm": {
