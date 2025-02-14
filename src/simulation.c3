@@ -28,12 +28,8 @@ fn void Simulation.init(Simulation* sim, int width, int height){
 }
 
 fn void Simulation.free_sim(Simulation* sim){
-    for(int y = 0; y < sim.height; y++){
-        allocator::free(allocator::heap(), sim.particles[y]);
-        allocator::free(allocator::heap(), sim.new_particles[y]);
-    }
-    allocator::free(allocator::heap(), sim.particles);
-    allocator::free(allocator::heap(), sim.new_particles);
+    common::free_2d_array(sim.particles, sim.height);
+    common::free_2d_array(sim.new_particles, sim.height);
 }
 
 fn void Simulation.add_random_sand(Simulation* sim){
@@ -96,10 +92,6 @@ fn void Simulation.push_to_buffer(Simulation* sim, Pixel** pixels){
     // DONT ITERATE ARRAYS WITH CHARS IN WASM???
     for(int y = 0; y < sim.height; y++){
         for(int x = 0; x < sim.width; x++){
-            // if(!(pixels[y][x].match(Pixel{0,0,0,255}) || pixels[y][x].a == 0)){
-            //     pixels[y][x].blend(sim.particles[y][x].to_pixel());
-            //     continue;
-            // }
             pixels[y][x] = sim.particles[y][x].to_pixel();
         }
     }

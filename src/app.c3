@@ -2,7 +2,6 @@ module noir::app;
 import noir::log;
 import noir::simulation;
 import noir::assets;
-import noir::common;
 import noir::common::input;
 import noir::common::renderer;
 import noir::common::canvas;
@@ -41,15 +40,16 @@ fn void app_update(double dt) @extern("app_update") @wasm{
     simulation.push_to_buffer(canvas.get_pixels());
     int size = 3;
     renderer::render_rect(&canvas, {255, 255, 255, 100}, size, size, ...mousePos - size/2);
+    renderer::render_image(&canvas, assets::test, CANVAS_WIDTH/2,CANVAS_HEIGHT/2 );
     renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height);
 }
 
 fn void app_init() @extern("app_init") @wasm @init{
-    log("Simulation Init.");
+    // log("Simulation Init.");
     // common::init_canvas(640,360);
     canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     simulation.init(SIM_WIDTH, SIM_HEIGHT);
-    log("Simulation Start!");
+    // log("Simulation Start!");
 }
 
 fn void app_deinit() @extern("app_deinit") @wasm{

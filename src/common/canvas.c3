@@ -75,10 +75,7 @@ fn void Canvas.init_canvas(&canvas, int width, int height)  @extern("init_canvas
 }
 
 fn void Canvas.free_canvas(&canvas) @extern("free_canvas"){
-    for(int y = 0; y < canvas.height; y++){
-        mem::free(canvas.pixels[y]);
-    }
-    mem::free(canvas.pixels);
+    common::free_2d_array(canvas.pixels, canvas.height);
     mem::free(canvas.flattened);
 }
 

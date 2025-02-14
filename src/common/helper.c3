@@ -2,12 +2,21 @@ module noir::common;
 import noir::log;
 import std::io;
 
+
+
 macro allocate_2d_array($Type, width,height, Allocator allocator = allocator::heap()){
     $Type** arr = allocator::new_array(allocator, $Type*, height);
     for(int y = 0; y < height; y++){
         arr[y] = allocator::new_array(allocator, $Type, width);
     }
     return arr;
+}
+
+macro free_2d_array(arr, height, Allocator allocator = allocator::heap()){
+    for(int y = 0; y < height; y++){
+        allocator::free(allocator, arr[y]);
+    }
+    allocator::free(allocator, arr);
 }
 
 extern fn float rand() @extern("rand") @if(env::WASM_NOLIBC);

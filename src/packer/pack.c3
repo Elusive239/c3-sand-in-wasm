@@ -79,7 +79,7 @@ macro save_as_string(Path path, DString* packedFile){
     embedName.convert_ascii_to_lower();
 
     String embedContents = (String) file::load_temp(path.path_string)!!;
-    packedFile.appendfn("ZString %s = \"%s\";", embedName, embedContents);
+    packedFile.appendfn("ZString %s_txt = \"%s\";", embedName, embedContents);
 }
 
 macro void save_as_pixels(Path path, DString* packedFile){
