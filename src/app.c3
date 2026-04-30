@@ -15,7 +15,7 @@ const int SIM_HEIGHT = 180*2;
 const int CANVAS_WIDTH = 320*2;
 const int CANVAS_HEIGHT = 180*2;
 
-fn void app_update(double dt) @extern("app_update") @wasm{
+fn void app_update(double dt) @cname("app_update") @wasm{
     renderer::clear_canvas(&canvas);
     int[<2>] mousePos = input::mouse_pos();
     simulation.step();
@@ -44,7 +44,7 @@ fn void app_update(double dt) @extern("app_update") @wasm{
     renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height);
 }
 
-fn void app_init() @extern("app_init") @wasm @init{
+fn void app_init() @cname("app_init") @wasm @init{
     // log("Simulation Init.");
     // common::init_canvas(640,360);
     canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -57,14 +57,14 @@ fn void app_deinit() @extern("app_deinit") @wasm{
     simulation.free_sim();
 }
 
-fn void _app_deinit() @if(!env::WASM_NOLIBC) @finalizer @private => app_deinit();
+fn void _app_deinit() @if(!env::FREESTANDING_WASM) @finalizer @private => app_deinit();
 
 module noir;
 import std::io;
 import noir::log;
 import noir::app;
 
-fn int main(String[] args) @if(!env::WASM_NOLIBC)
+fn int main(String[] args) @if(!env::FREESTANDING_WASM)
 {
 	log("Hello!");
 	return 0;

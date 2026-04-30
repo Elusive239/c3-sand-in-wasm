@@ -22,8 +22,12 @@ macro bool Pixel.match(&pixel, Pixel other){
     return pixel.r == other.r && pixel.g == other.g && pixel.b == other.b && pixel.a == other.a;
 }
 
-fn String Pixel.to_string(&pixel, Allocator allocator = allocator::heap()) @dynamic{
-    return string::format("{%d, %d, %d, %d}",pixel.r, pixel.g, pixel.b, pixel.a, allocator: allocator);
+fn String Pixel.to_string(&pixel, Allocator allocator = mem) {
+    return string::format(allocator, "%s", pixel);
+}
+
+fn usz? Pixel.to_format(&pixel, Formatter* formatter) @dynamic {
+    return formatter.printf("{%d, %d, %d, %d}",pixel.r, pixel.g, pixel.b, pixel.a);
 }
 
 // yoinked from tsodings olive.c library
@@ -44,12 +48,12 @@ struct Canvas{
     int height;
 }
 
-fn Pixel** Canvas.get_pixels(&canvas) @extern("get_pixels") @wasm{
+fn Pixel** Canvas.get_pixels(&canvas) @cname("get_pixels") @wasm{
     if(!canvas.pixels) return null;
     return canvas.pixels;
 }
 
-fn Pixel* Canvas.get_flat_buffer(&canvas) @extern("get_flat_buffer") @wasm{
+fn Pixel* Canvas.get_flat_buffer(&canvas) @cname("get_flat_buffer") @wasm{
     int i;
     for(int y; y < canvas.height; y++)for(int x; x < canvas.width; x++) {
         canvas.flattened[i] = canvas.pixels[y][x];
@@ -58,11 +62,11 @@ fn Pixel* Canvas.get_flat_buffer(&canvas) @extern("get_flat_buffer") @wasm{
     return canvas.flattened;
 }
 
-fn void Canvas.init_canvas(&canvas, int width, int height)  @extern("init_canvas") @wasm{
+fn void Canvas.init_canvas(&canvas, int width, int height)  @cname("init_canvas") @wasm{
     if(canvas.pixels){
         canvas.free_canvas();
     }
-    $if env::WASM_NOLIBC:
+    $if env::FREESTANDING_WASM:
         set_js_dimensions(width, height);
     $else
         log("NOT YET IMPLEMENTED.");
@@ -71,12 +75,12 @@ fn void Canvas.init_canvas(&canvas, int width, int height)  @extern("init_canvas
     canvas.width = width;
     canvas.height = height;
     canvas.pixels = common::allocate_2d_array(Pixel, width, height);
-    canvas.flattened = mem::new_array(Pixel, (usz)(width*height));
+    canvas.flattened = alloc::new_array(mem, Pixel, (usz)(width*height));
 }
 
 fn void Canvas.free_canvas(&canvas) @extern("free_canvas"){
     common::free_2d_array(canvas.pixels, canvas.height);
-    mem::free(canvas.flattened);
+    alloc::free(mem, canvas.flattened);
 }
 
-extern fn void set_js_dimensions(int x, int y)@extern("set_js_dimensions") @if(env::WASM_NOLIBC);
+extern fn void set_js_dimensions(int x, int y) @cname("set_js_dimensions") @if(env::FREESTANDING_WASM);

@@ -14,6 +14,10 @@ fn void Image.free(Image* img){
     mem::free(img.data);
 }
 
-fn String Image.to_string(&image, Allocator allocator = allocator::heap()) @dynamic{
-    return string::format("Image{name: %s, width: %d, height: %d, data: %s}", image.fname,image.width, image.height, image.data[0..image.width*image.height], allocator: allocator);
+fn usz? Image.to_format(&image, Formatter* formatter) @dynamic  {
+    return formatter.printf("Image{name: %s, width: %d, height: %d, data: %s}", image.fname,image.width, image.height, image.data[0..image.width*image.height])!;
+}
+
+fn String Image.to_string(&image, Allocator alloc = mem) {
+    return string::format(alloc, "%s", image);
 }

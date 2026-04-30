@@ -6,8 +6,8 @@ tlocal int[<2>] mouseCoords;
 tlocal uint mouseButton;
 tlocal bool[5] mouseButtonPressedThisFrame;
 
-fn void set_mouse_pos(int x, int y)@wasm @extern("set_mouse_pos") {
-    mouseCoords = int[<2>]{x, y};
+fn void set_mouse_pos(int x, int y)@wasm @cname("set_mouse_pos") {
+    mouseCoords = (int[<2>]){x, y};
 }
 
 fn int[<2>] mouse_pos() {
@@ -23,7 +23,7 @@ fn int[<2>] mouse_pos() {
 *   16 : 5th button (typically the "Browser Forward" button)
 */
 
-fn void set_mouse_button_up(uint mbutton) @wasm @extern("set_mouse_button_up"){
+fn void set_mouse_button_up(uint mbutton) @wasm @cname("set_mouse_button_up"){
     const MouseButton[] MBUTTONS = MouseButton.values;
     for(int i = 0 ; i < MouseButton.NONE.ordinal; i++){
         bool thisFrame = (MBUTTONS[i].v & mbutton) == MBUTTONS[i].v;
@@ -34,7 +34,7 @@ fn void set_mouse_button_up(uint mbutton) @wasm @extern("set_mouse_button_up"){
     mouseButton = mbutton;
 }
 
-fn void set_mouse_button_down(uint mbutton) @wasm @extern("set_mouse_button_down"){
+fn void set_mouse_button_down(uint mbutton) @wasm @cname("set_mouse_button_down"){
     const MouseButton[] MBUTTONS = MouseButton.values;
     for(int i = 0 ; i < MouseButton.NONE.ordinal; i++){
         bool lastFrame = mouseButtonPressedThisFrame[i];
@@ -47,13 +47,13 @@ fn void set_mouse_button_down(uint mbutton) @wasm @extern("set_mouse_button_down
     mouseButton = mbutton;
 }
 
-enum MouseButton : int (uint v){
-    PRIMARY = 1,
-    SECONDARY = 2,
-    AUXILIARY = 4,
-    BROWSER_BACK = 8,
-    BROWSER_FORWARD = 16,
-    NONE = 0,
+enum MouseButton : int (uint v) {
+    PRIMARY  {1},
+    SECONDARY  {2},
+    AUXILIARY  {4},
+    BROWSER_BACK  {8},
+    BROWSER_FORWARD  {16},
+    NONE  {0},
 }
 
 macro mouse_left()              => get_mouse(MouseButton.PRIMARY);
@@ -62,7 +62,7 @@ macro mouse_auxiliary()         => get_mouse(MouseButton.AUXILIARY);
 macro mouse_browser_back()      => get_mouse(MouseButton.BROWSER_BACK);
 macro mouse_browser_forward()   => get_mouse(MouseButton.BROWSER_FORWARD);
 
-fn bool get_mouse(MouseButton mbutton){
+fn bool get_mouse(MouseButton mbutton) {
     return (mbutton.v & mouseButton) == mbutton.v;
 }
 
@@ -75,7 +75,7 @@ macro mouse_browser_forward_once_frame() => get_mouse_once_frame(MouseButton.BRO
 <*
     @require mbutton != MouseButton.NONE
 *>
-fn bool get_mouse_once_frame(MouseButton mbutton){
+fn bool get_mouse_once_frame(MouseButton mbutton) {
     if(mouseButtonPressedThisFrame[mbutton.ordinal]){
         mouseButtonPressedThisFrame[mbutton.ordinal] = false;
         return true;

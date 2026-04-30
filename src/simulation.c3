@@ -40,24 +40,22 @@ fn void Simulation.put_state(Simulation* sim, int x, int y, State state) {
     sim.particles[y][x].pstate = state;
 }
 
-fault SimulationFailure{
-    INDEX_OUT_OF_BOUNDS
-}
+faultdef INDEX_OUT_OF_BOUNDS;
 
-fn State! Simulation.get_state(&self,int x, int y){
-    if(x >= self.width || x < 0) return  SimulationFailure.INDEX_OUT_OF_BOUNDS?;
-    if(y >= self.height || y < 0) return SimulationFailure.INDEX_OUT_OF_BOUNDS?;
+fn State? Simulation.get_state(&self,int x, int y) {
+    if(x >= self.width || x < 0) return  INDEX_OUT_OF_BOUNDS~;
+    if(y >= self.height || y < 0) return INDEX_OUT_OF_BOUNDS~;
     return self.particles[y][x].pstate;
 }
 
-fn void Simulation.step(Simulation* sim){
+fn void Simulation.step(Simulation* sim) {
     for(int y = sim.height-1; y > 0; y--){
         for(int x = 0; x < sim.width; x++){
             State state = sim.get_state(x, y)!!;
             if(state == State.SAND){
-                State! below = sim.get_state(x, y+1);
-                State! belowR = sim.get_state(x+1, y+1);
-                State! belowL = sim.get_state(x-1, y+1);
+                State? below = sim.get_state(x, y+1);
+                State? belowR = sim.get_state(x+1, y+1);
+                State? belowL = sim.get_state(x-1, y+1);
                 if(try below && below == State.AIR){
                     sim.new_particles[y+1][x].pstate = state;
                 }else if (try belowR && belowR == State.AIR){
@@ -79,11 +77,11 @@ fn void Simulation.step(Simulation* sim){
 macro Pixel Particle.to_pixel(self){
     switch(self.pstate){
         case State.AIR:
-            return Pixel{0,0,0, 255};
+            return {0,0,0, 255};
         case State.SAND:
-            return Pixel{255, 253, 208, 255};
+            return {255, 253, 208, 255};
         case State.WALL:
-            return Pixel{120, 120, 120, 255};
+            return {120, 120, 120, 255};
         default: unreachable("UNIMPLEMENTED STATE");
     }
 }

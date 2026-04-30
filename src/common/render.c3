@@ -11,12 +11,12 @@ fn void clear_canvas(Canvas* canvas){
 }
 
 fn void render(Pixel* data, int width, int height){
-    $if(env::WASM_NOLIBC):
+    $if(env::FREESTANDING_WASM):
     js_render(data, width, height);
     $endif
 }
 
-extern fn void js_render(Pixel* data, int width, int height)@wasm @extern("render");
+extern fn void js_render(Pixel* data, int width, int height)@wasm @cname("render");
 
 fn void render_pixels(Canvas* canvas, Pixel* data, int width, int height, int xOffs =0, int yOffs=0){
     // DONT ITERATE ARRAYS WITH CHARS IN WASM??? (Broke Stuff)
@@ -43,17 +43,17 @@ fn void render_image(Canvas* canvas, Image image, int xOffs =0, int yOffs=0){
 }
 
 fn void render_rect(Canvas* canvas, Pixel color, int width, int height, int xOffs =0, int yOffs=0) => @pool(){
-    Pixel* rect = allocator::new_array(allocator::temp(), Pixel, width*height);
+    Pixel* rect = alloc::new_array( tmem, Pixel, width*height);
     for(int i = 0 ; i < width*height; i++){
         rect[i] = color;
     }
     render_pixels(canvas, rect, width, height, xOffs,yOffs);
-};
+}
 
 // https://www.csharp-console-examples.com/general/draw-a-circle-in-c-console-application/
 fn void render_circle(Canvas* canvas, Pixel color, int radius, int thickness = 1, int xOffs =0, int yOffs=0) => @pool(){
     int diameter = radius*radius;
-    Pixel* circle = allocator::new_array(allocator::temp(), Pixel, diameter*diameter);
+    Pixel* circle = alloc::new_array( tmem, Pixel, diameter*diameter);
     int i,j;
     int index;
     for (i=0; i<=2*radius; i++)
@@ -67,10 +67,10 @@ fn void render_circle(Canvas* canvas, Pixel color, int radius, int thickness = 1
             }
             else
             { 
-                circle[index] = Pixel{};
+                circle[index] = (Pixel){};
             }
             index++;
         }
     }
     render_pixels(canvas, circle, diameter, diameter, xOffs,yOffs);
-};
+}

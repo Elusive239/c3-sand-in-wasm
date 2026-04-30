@@ -1,8 +1,11 @@
 {
-    "provides": "stb",
-    "c-sources" : ["./csources/**"],
-    "cflags": "/c /Fo./build/tmp/stb/",
-    "targets" : {
+    "provides": "stbi",
+    "sources": ["**"],
+    //"c-sources" : ["./csources/**"],
+    //"c-include-dirs" : ["./csources/**"],
+    "linklib-dir": "",  
+  "cflags": "-DSTB_IMAGE_IMPLEMENTATION -DSTBI_NO_LINEAR -DSTBI_NO_HDR -lm",  
+  "targets" : {
         "wasm32": {}, //requires no standard library
         "wasm64": {}, //requires no standard library
         "windows-aarch64": {},
@@ -21,7 +24,10 @@
         "linux-riscv32": {},
         "linux-riscv64": {},
         "linux-x86": {},
-        "linux-x64": {},
+        "linux-x64": {
+      "linked-libraries" : ["stb_image"],
+      //"linker-search-paths": ["./"]
+    },
         "macos-aarch64": {},
         "macos-x64": {},
         "mcu-x86": {},

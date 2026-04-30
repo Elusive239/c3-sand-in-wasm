@@ -1,12 +1,12 @@
 {
   "langrev": "1",
   "warnings": [ "no-unused" ],
-  "authors": [ "Elusive239 <@elusive-noir.bsky.social"],
+  "authors": [ "Elusive239 <@elusive-noir.bsky.social>"],
   "version": "0.1.0",
   "sources": [ "src/**", "src/common/**", "assets/**" ],
   "test-sources": [ "test/**" ],
   "output": "build",
-  "cc": "CL",
+  "cc": "gcc",
   "targets": {
     "proj": {
       "type": "executable",
@@ -14,7 +14,7 @@
       "output": "build/main",
     },
     "packer":{
-      "dependencies": [ "stb" ],
+      "dependencies": [ "stbi" ],
       "dependency-search-paths": [ "lib" ],
       "type": "executable",
       "name": "packer",
