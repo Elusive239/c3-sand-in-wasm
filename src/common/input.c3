@@ -10,7 +10,7 @@ fn void set_mouse_pos(int x, int y)@wasm @cname("set_mouse_pos") {
     mouseCoords = (int[<2>]){x, y};
 }
 
-fn int[<2>] mouse_pos() {
+fn int[<2>] mouse_pos() @feat(WASM) {
     return mouseCoords;
 }
 
@@ -56,11 +56,11 @@ enum MouseButton : int (uint v) {
     NONE  {0},
 }
 
-macro mouse_left()              => get_mouse(MouseButton.PRIMARY);
-macro mouse_right()             => get_mouse(MouseButton.SECONDARY);
-macro mouse_auxiliary()         => get_mouse(MouseButton.AUXILIARY);
-macro mouse_browser_back()      => get_mouse(MouseButton.BROWSER_BACK);
-macro mouse_browser_forward()   => get_mouse(MouseButton.BROWSER_FORWARD);
+macro mouse_left()             @feat(WASM) => get_mouse(MouseButton.PRIMARY);
+macro mouse_right()            @feat(WASM) => get_mouse(MouseButton.SECONDARY);
+macro mouse_auxiliary()        @feat(WASM) => get_mouse(MouseButton.AUXILIARY);
+macro mouse_browser_back()     @feat(WASM) => get_mouse(MouseButton.BROWSER_BACK);
+macro mouse_browser_forward()  @feat(WASM) => get_mouse(MouseButton.BROWSER_FORWARD);
 
 fn bool get_mouse(MouseButton mbutton) {
     return (mbutton.v & mouseButton) == mbutton.v;
@@ -82,3 +82,19 @@ fn bool get_mouse_once_frame(MouseButton mbutton) {
     }
     return false;
 }
+
+
+module noir::common::input @feat(!WASM);
+import noir::common;
+import raylib6;
+
+fn int[<2>] mouse_pos() {
+	RLVector2 vec = rl::get_mouse_position();
+    return {(int)vec.x, (int)vec.y};
+}
+
+macro mouse_left()           	=> rl::is_mouse_button_down(RLMouseButton.LEFT);
+macro mouse_right()          	=> rl::is_mouse_button_down(RLMouseButton.RIGHT);
+macro mouse_auxiliary()      	=> rl::is_mouse_button_down(RLMouseButton.MIDDLE); // uhh i dont remember what this is supposed to be...
+macro mouse_browser_back()   	=> rl::is_mouse_button_down(RLMouseButton.BACK);
+macro mouse_browser_forward()	=> rl::is_mouse_button_down(RLMouseButton.FORWARD);

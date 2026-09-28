@@ -68,8 +68,8 @@ fn void Canvas.init_canvas(&canvas, int width, int height)  @cname("init_canvas"
     }
     $if $feat(WASM):
         set_js_dimensions(width, height);
-    $else
-        log("NOT YET IMPLEMENTED.");
+    // $else
+    //     log("NOT YET IMPLEMENTED.");
 
     $endif
 
@@ -85,3 +85,12 @@ fn void Canvas.free_canvas(&canvas) @cname("free_canvas"){
 }
 
 extern fn void set_js_dimensions(int x, int y) @cname("set_js_dimensions")  @feat(WASM);
+
+module noir::common::canvas @feat(!WASM);
+import noir::log;
+import std::io;
+import raylib6;
+
+fn RLImage Canvas.to_rlimage( &canvas) {
+	return { (void*) canvas.flattened, canvas.width, canvas.height, 1, RLPixelFormat.UNCOMPRESSED_R8G8B8A8};
+}

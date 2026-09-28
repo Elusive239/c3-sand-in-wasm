@@ -15,7 +15,7 @@ const int SIM_HEIGHT = 180*2;
 const int CANVAS_WIDTH = 320*2;
 const int CANVAS_HEIGHT = 180*2;
 
-fn void app_update(double dt) @cname("app_update") @wasm{
+fn void update(double dt) @cname("app_update") @wasm{
     renderer::clear_canvas(&canvas);
     int[<2>] mousePos = input::mouse_pos();
     simulation.step();
@@ -44,7 +44,7 @@ fn void app_update(double dt) @cname("app_update") @wasm{
     renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height);
 }
 
-fn void app_init() @cname("app_init") @wasm @init{
+fn void init() @cname("app_init") @feat(WASM) @wasm @init{
     // log("Simulation Init.");
     // common::init_canvas(640,360);
     canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -52,20 +52,50 @@ fn void app_init() @cname("app_init") @wasm @init{
     // log("Simulation Start!");
 }
 
-fn void app_deinit() @cname("app_deinit") @wasm{
+fn void deinit() @cname("app_deinit") @feat(WASM) @finalizer @wasm{
     canvas.free_canvas();
     simulation.free_sim();
 }
 
-fn void _app_deinit() @feat(!WASM)@finalizer @private => app_deinit();
+module noir::app @feat(!WASM);
+import noir::log;
+import raylib6;
+
+fn void init() @feat(!WASM) {
+	rl::init_window(CANVAS_WIDTH, CANVAS_HEIGHT, "Falling Sand Demo!");
+	rl::toggle_fullscreen();
+	canvas.init_canvas(rl::get_screen_width(), rl::get_screen_height());
+	simulation.init(SIM_WIDTH, SIM_HEIGHT);
+}
+
+fn void deinit() @feat(!WASM) {
+	rl::close_window();
+    canvas.free_canvas();
+    simulation.free_sim();
+}
 
 module noir @feat(!WASM);
 import std::io;
 import noir::log;
 import noir::app;
+import raylib6;
 
 fn int main(String[] args) 
 {
+	app::init();
+	while(!rl::window_should_close()) {
+		app::update( (double)rl::get_frame_time());
+		RLTexture2D texture = rl::load_texture_from_image(app::canvas.to_rlimage());
+		defer rl::unload_texture(texture);
+		rl::begin_drawing();
+			rl::draw_texture( texture, 
+			(rl::get_screen_width()/2) - (texture.width/2), 
+			(rl::get_screen_height()/2) - (texture.height/2), 
+			rl::WHITE
+		);
+		rl::end_drawing();
+	}
+	defer app::deinit();
 	log("Hello!");
 	return 0;
 }
