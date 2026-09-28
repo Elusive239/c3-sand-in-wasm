@@ -10,28 +10,20 @@ fn void clear_canvas(Canvas* canvas){
     }
 }
 
-fn void render(Pixel* data, int width, int height){
-    $if( $feat(WASM) ):
-    	js_render(data, width, height);
-	$else 
-		
-    $endif
-}
-
-extern fn void js_render(Pixel* data, int width, int height)@wasm @cname("render");
+extern fn void render(Pixel* data, int width, int height) @feat(WASM) @wasm @cname("render");
 
 fn void render_pixels(Canvas* canvas, Pixel* data, int width, int height, int xOffs =0, int yOffs=0){
     // DONT ITERATE ARRAYS WITH CHARS IN WASM??? (Broke Stuff)
     int i = 0;
     for(int y = 0; y < height; y++){
         int dy = y + yOffs;
-        if(dy > canvas.height || dy < 0){
+        if(dy >= canvas.height || dy < 0){
             i += width;
             continue;
         }
         for(int x = 0; x < width; x++){
             int dx = x + xOffs;
-            if(dx > canvas.width || dx < 0){
+            if(dx >= canvas.width || dx < 0){
                 i += 1;
                 continue;
             }

@@ -41,7 +41,10 @@ fn void update(double dt) @cname("app_update") @wasm{
     int size = 3;
     renderer::render_rect(&canvas, {255, 255, 255, 100}, size, size, ...mousePos - size/2);
     renderer::render_image(&canvas, assets::test, CANVAS_WIDTH/2,CANVAS_HEIGHT/2 );
-    renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height);
+
+	$if $feat(WASM) :
+    	renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height) ;
+	$endif
 }
 
 fn void init() @cname("app_init") @feat(WASM) @wasm @init{
@@ -64,7 +67,7 @@ import raylib6;
 fn void init() @feat(!WASM) {
 	rl::init_window(CANVAS_WIDTH, CANVAS_HEIGHT, "Falling Sand Demo!");
 	rl::toggle_fullscreen();
-	canvas.init_canvas(rl::get_screen_width(), rl::get_screen_height());
+	canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
 	simulation.init(SIM_WIDTH, SIM_HEIGHT);
 }
 
@@ -83,19 +86,37 @@ import raylib6;
 fn int main(String[] args) 
 {
 	app::init();
+	defer app::deinit();
+	app::update( (double)rl::get_frame_time());
 	while(!rl::window_should_close()) {
-		app::update( (double)rl::get_frame_time());
-		RLTexture2D texture = rl::load_texture_from_image(app::canvas.to_rlimage());
-		defer rl::unload_texture(texture);
+		RLTexture2D texture = rl::load_texture_from_image(app::canvas.to_rlimage());	
+		defer {
+			rl::unload_texture(texture);
+			app::update( (double)rl::get_frame_time());
+		};
+		float screen_width = rl::get_screen_width();
+		float screen_height = rl::get_screen_height();
+
+		float w = texture.width;
+		float h = texture.height;
+		float x = (((float)screen_width/2) - (w/2));
+		float y = (((float)screen_height/2) - (h/2));
+
+		io::printfn("Screen Height: %s", screen_height);
+		io::printfn("Screen Width: %s", screen_width);
+
+		io::printfn("Texture Height: %s", h);
+		io::printfn("Texture Width: %s", w);
+
 		rl::begin_drawing();
-			rl::draw_texture( texture, 
-			(rl::get_screen_width()/2) - (texture.width/2), 
-			(rl::get_screen_height()/2) - (texture.height/2), 
+			rl::draw_texture_pro( texture, 
+			{0,0,texture.width, texture.height},
+			{x, y, w, h}, 
+			{0,0}, 0,
 			rl::WHITE
 		);
 		rl::end_drawing();
 	}
-	defer app::deinit();
 	log("Hello!");
 	return 0;
 }

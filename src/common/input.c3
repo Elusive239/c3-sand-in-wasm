@@ -90,6 +90,8 @@ import raylib6;
 
 fn int[<2>] mouse_pos() {
 	RLVector2 vec = rl::get_mouse_position();
+	// TODO: Scale mouse input to canvas size
+	// do we do that here or do we do that elsewhere...?
     return {(int)vec.x, (int)vec.y};
 }
 

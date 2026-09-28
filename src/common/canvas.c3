@@ -92,5 +92,6 @@ import std::io;
 import raylib6;
 
 fn RLImage Canvas.to_rlimage( &canvas) {
-	return { (void*) canvas.flattened, canvas.width, canvas.height, 1, RLPixelFormat.UNCOMPRESSED_R8G8B8A8};
+	// io::printfn("Canvas Width: %s, Canvas Height: %s", canvas.width, canvas.height);
+	return { (void*) canvas.get_flat_buffer(), canvas.width, canvas.height, 1, RLPixelFormat.UNCOMPRESSED_R8G8B8A8};
 }
