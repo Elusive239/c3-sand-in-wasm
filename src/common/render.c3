@@ -11,8 +11,10 @@ fn void clear_canvas(Canvas* canvas){
 }
 
 fn void render(Pixel* data, int width, int height){
-    $if(env::FREESTANDING_WASM):
-    js_render(data, width, height);
+    $if( $feat(WASM) ):
+    	js_render(data, width, height);
+	$else 
+		
     $endif
 }
 
@@ -43,7 +45,7 @@ fn void render_image(Canvas* canvas, Image image, int xOffs =0, int yOffs=0){
 }
 
 fn void render_rect(Canvas* canvas, Pixel color, int width, int height, int xOffs =0, int yOffs=0) => @pool(){
-    Pixel* rect = alloc::new_array( tmem, Pixel, width*height);
+    Pixel* rect = alloc::new_array( tmem, Pixel, (sz)(width*height));
     for(int i = 0 ; i < width*height; i++){
         rect[i] = color;
     }
@@ -53,7 +55,7 @@ fn void render_rect(Canvas* canvas, Pixel color, int width, int height, int xOff
 // https://www.csharp-console-examples.com/general/draw-a-circle-in-c-console-application/
 fn void render_circle(Canvas* canvas, Pixel color, int radius, int thickness = 1, int xOffs =0, int yOffs=0) => @pool(){
     int diameter = radius*radius;
-    Pixel* circle = alloc::new_array( tmem, Pixel, diameter*diameter);
+    Pixel* circle = alloc::new_array( tmem, Pixel, (sz)(diameter*diameter));
     int i,j;
     int index;
     for (i=0; i<=2*radius; i++)

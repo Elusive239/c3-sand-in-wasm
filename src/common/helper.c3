@@ -19,17 +19,17 @@ macro free_2d_array(arr, height, Allocator allocator = mem){
     alloc::free(allocator, arr);
 }
 
-extern fn float rand() @cname("rand") @if(env::FREESTANDING_WASM);
-extern fn float sqrt(double) @cname("sqrt") @if(env::FREESTANDING_WASM);
+extern fn float rand() @cname("rand")  @feat(WASM);
+extern fn float sqrt(double) @cname("sqrt") @feat(WASM);
 
 import std::math;
 import std::math::random;
 
-fn float rand() @cname("rand") @if(!env::FREESTANDING_WASM){
-    float i = (float) random::rand(int.max);
-    return i / (float) int.max;
+fn float rand() @cname("rand")  @feat(!WASM){
+    float i = (float) random::rand(int::max);
+    return i / (float) int::max;
 }
 
-fn double sqrt(double rt)  @cname("sqrt") @if(!env::FREESTANDING_WASM){
+fn double sqrt(double rt)  @cname("sqrt")  @feat(!WASM){
     return math::sqrt(rt);
 }

@@ -29,7 +29,7 @@ fn PathList? to_assets_folder(String fName){
     return ls;
 }
 
-fn int main(String[] args){
+fn int main(String[] args) @feat(!WASM){
     String fName = "assets";
     String mName = "noir::assets";
     String fOut = "assets.c3";
@@ -43,7 +43,7 @@ fn int main(String[] args){
         packedFile.append_asset_template(mName);
         log("Packing...");
         foreach(path : ls){
-            if(path.path_string == fOut) continue;
+            if(path == fOut) continue;
 
             log("\t%s", path);
             if(path.has_extension(AssetType.PNG.extension)){
@@ -69,31 +69,31 @@ fn int main(String[] args){
 macro save_as_string(Path path, DString* packedFile){
     String embedName;
     if(try path.extension()){
-        embedName = ((String) path.path_string[0..path.path_string.len - (path.extension()!!.len+2)]).tcopy();
+        embedName = ((String) path[0..path.len - (path.extension()!!.len+2)]).tcopy();
     }else{
-        embedName = path.path_string[:path.path_string.len].tcopy();
+        embedName = path[:path.len].tcopy();
     }
 
     embedName.convert_to_lower();
 
-    String embedContents = (String) file::load_temp(path.path_string)!!;
+    String embedContents = (String) file::load_temp(path)!!;
     packedFile.appendfn("ZString %s_txt = \"%s\";", embedName, embedContents);
 }
 
 macro void save_as_pixels(Path path, DString* packedFile){
     int width, height, channels;
-    char* loadedImage = stbi::load(path.path_string.zstr_tcopy(), &width, &height, &channels, 0);
+    char* loadedImage = stbi::load(path.zstr_tcopy(), &width, &height, &channels, 0);
     defer stbi::image_free(loadedImage);
     if(loadedImage == null){
-        wlog("Unable to read %s", path.path_string);
+        wlog("Unable to read %s", path);
         return;
     }
     int fullLen = width * height * channels;
     String embedName;
     if(try path.extension()){
-        embedName = ((String) path.path_string[0..path.path_string.len - (path.extension()!!.len+2)]).tcopy();
+        embedName = ((String) path[0..path.len - (path.extension()!!.len+2)]).tcopy();
     }else{
-        embedName = path.path_string[:path.path_string.len].copy(tmem);
+        embedName = path[:path.len].copy(tmem);
     }
     embedName.convert_to_lower();
 

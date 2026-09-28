@@ -3,7 +3,7 @@ import std::io;
 
 /*
 *   Simple logging module. Makes use of standard out/err by default.
-*   To use features add them to project file or pass "-D" followed by the feature,
+*   To use feats add them to project file or pass "-D" followed by the feat,
 *   for example: "c3c run -D NO_LOG"
 */
 
@@ -15,7 +15,7 @@ enum LogType : (String log_prefix) @private{
 }
 
 macro String @log_prefix($type) @private{
-    $if((!$feature(NO_LOG_COLOR) && (!env::WIN32) || $feature(FORCE_LOG_COLOR))):
+    $if((!$feat(NO_LOG_COLOR) && (!env::WIN32) || $feat(FORCE_LOG_COLOR))):
         $switch($type) :
             $case 1: return "\x1B[0;37m" "[DEBUG] "   "\x1B[0m";
             $case 2: return "\x1B[0;33m" "[WARNING] " "\x1B[0m";
@@ -40,7 +40,7 @@ interface LoggerOut {
 LoggerOut stream @private;
 LoggerOut err_stream @private;
 
-fn void logger_init() @init @if(!env::NO_LIBC){
+fn void logger_init() @init  @feat(!NO_LIBC){
     stream = (LoggerOut) io::stdout();
     err_stream = (LoggerOut) io::stderr();
 }
@@ -60,7 +60,7 @@ macro void full_log(LogType type, LoggerOut stream, String fmt, args...)@private
 	    str.appendfn(fmt, ...args);
         // str.appendfn(" [%s]",$$TIME);
         $switch :
-            $case env::FREESTANDING_WASM: 
+            $case $feat(WASM): 
                 String ret_str = str.str_view().copy(tmem);
                 write(ret_str.ptr, ret_str.len);
                 ret_str.free(tmem);
@@ -73,26 +73,26 @@ macro void full_log(LogType type, LoggerOut stream, String fmt, args...)@private
 
 fn void log(String fmt, args...) @builtin{
     $switch :
-        $case !$feature(NO_LOG): full_log(LogType.NONE, stream, fmt, ...args);
+        $case !$feat(NO_LOG): full_log(LogType.NONE, stream, fmt, ...args);
     $endswitch
 }
 
 fn void wlog(String fmt, args...) @builtin{
     $switch :
-        $case !$feature(NO_LOG): full_log(LogType.WARNING, stream, fmt, ...args);
+        $case !$feat(NO_LOG): full_log(LogType.WARNING, stream, fmt, ...args);
     $endswitch
 }
 
 fn void elog(String fmt, args...) @builtin{
     $switch :
-        $case !$feature(NO_LOG): full_log(LogType.ERROR, err_stream, fmt, ...args);
+        $case !$feat(NO_LOG): full_log(LogType.ERROR, err_stream, fmt, ...args);
     $endswitch
 }
 
 fn void dlog(String fmt, args...) @builtin{
     $switch :
-        $case ($feature(DEBUG) && !$feature(NO_LOG)): full_log(LogType.DEBUG, stream, fmt, ...args);
+        $case ($feat(DEBUG) && !$feat(NO_LOG)): full_log(LogType.DEBUG, stream, fmt, ...args);
     $endswitch
 }
 
-extern fn void write(void *buffer, usz buffer_sz) @extern("console_log") @if(env::FREESTANDING_WASM);
+extern fn void write(void *buffer, usz buffer_sz) @cname("console_log") @feat(WASM);

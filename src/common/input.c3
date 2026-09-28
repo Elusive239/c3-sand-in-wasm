@@ -24,7 +24,7 @@ fn int[<2>] mouse_pos() {
 */
 
 fn void set_mouse_button_up(uint mbutton) @wasm @cname("set_mouse_button_up"){
-    const MouseButton[] MBUTTONS = MouseButton.values;
+    const MouseButton[] MBUTTONS = MouseButton::values;
     for(int i = 0 ; i < MouseButton.NONE.ordinal; i++){
         bool thisFrame = (MBUTTONS[i].v & mbutton) == MBUTTONS[i].v;
         if (!thisFrame){
@@ -35,7 +35,7 @@ fn void set_mouse_button_up(uint mbutton) @wasm @cname("set_mouse_button_up"){
 }
 
 fn void set_mouse_button_down(uint mbutton) @wasm @cname("set_mouse_button_down"){
-    const MouseButton[] MBUTTONS = MouseButton.values;
+    const MouseButton[] MBUTTONS = MouseButton::values;
     for(int i = 0 ; i < MouseButton.NONE.ordinal; i++){
         bool lastFrame = mouseButtonPressedThisFrame[i];
         bool thisFrame = (MBUTTONS[i].v & mbutton) == MBUTTONS[i].v;

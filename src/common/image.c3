@@ -14,7 +14,7 @@ fn void Image.free(Image* img){
     mem::free(img.data);
 }
 
-fn usz? Image.to_format(&image, Formatter* formatter) @dynamic  {
+fn sz? Image.to_format(&image, Formatter* formatter) @dynamic  {
     return formatter.printf("Image{name: %s, width: %d, height: %d, data: %s}", image.fname,image.width, image.height, image.data[0..image.width*image.height])!;
 }
 

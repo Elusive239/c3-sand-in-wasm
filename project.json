@@ -9,8 +9,9 @@
   "cc": "gcc",
   "targets": {
     "proj": {
+      "dependencies": [ "stbi" ],
+      "dependency-search-paths": [ "lib" ],
       "type": "executable",
-      // "exec": ["c3c run packer"],
       "output": "build/main",
     },
     "packer":{
@@ -19,7 +20,7 @@
       "type": "executable",
       "name": "packer",
       "opt": "O5",
-      "sources-override": [ "src/packer/pack.c3", "src/common/logging.c3"],
+      "sources-override": [ "tools/packer/pack.c3", "src/common/logging.c3"],
       "output": "build/packer",
     },
     "wasm": {

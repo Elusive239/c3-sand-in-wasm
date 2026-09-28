@@ -26,7 +26,7 @@ fn String Pixel.to_string(&pixel, Allocator allocator = mem) {
     return string::format(allocator, "%s", pixel);
 }
 
-fn usz? Pixel.to_format(&pixel, Formatter* formatter) @dynamic {
+fn sz? Pixel.to_format(&pixel, Formatter* formatter) @dynamic {
     return formatter.printf("{%d, %d, %d, %d}",pixel.r, pixel.g, pixel.b, pixel.a);
 }
 
@@ -66,10 +66,11 @@ fn void Canvas.init_canvas(&canvas, int width, int height)  @cname("init_canvas"
     if(canvas.pixels){
         canvas.free_canvas();
     }
-    $if env::FREESTANDING_WASM:
+    $if $feat(WASM):
         set_js_dimensions(width, height);
     $else
         log("NOT YET IMPLEMENTED.");
+
     $endif
 
     canvas.width = width;
@@ -78,9 +79,9 @@ fn void Canvas.init_canvas(&canvas, int width, int height)  @cname("init_canvas"
     canvas.flattened = alloc::new_array(mem, Pixel, (usz)(width*height));
 }
 
-fn void Canvas.free_canvas(&canvas) @extern("free_canvas"){
+fn void Canvas.free_canvas(&canvas) @cname("free_canvas"){
     common::free_2d_array(canvas.pixels, canvas.height);
     alloc::free(mem, canvas.flattened);
 }
 
-extern fn void set_js_dimensions(int x, int y) @cname("set_js_dimensions") @if(env::FREESTANDING_WASM);
+extern fn void set_js_dimensions(int x, int y) @cname("set_js_dimensions")  @feat(WASM);

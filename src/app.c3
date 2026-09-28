@@ -52,20 +52,21 @@ fn void app_init() @cname("app_init") @wasm @init{
     // log("Simulation Start!");
 }
 
-fn void app_deinit() @extern("app_deinit") @wasm{
+fn void app_deinit() @cname("app_deinit") @wasm{
     canvas.free_canvas();
     simulation.free_sim();
 }
 
-fn void _app_deinit() @if(!env::FREESTANDING_WASM) @finalizer @private => app_deinit();
+fn void _app_deinit() @feat(!WASM)@finalizer @private => app_deinit();
 
-module noir;
+module noir @feat(!WASM);
 import std::io;
 import noir::log;
 import noir::app;
 
-fn int main(String[] args) @if(!env::FREESTANDING_WASM)
+fn int main(String[] args) 
 {
 	log("Hello!");
 	return 0;
 }
+
