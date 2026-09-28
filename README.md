@@ -1,5 +1,7 @@
 # c3-sand-simulation-in-wasm
-Its a really basic falling sand simulation written in C3 and rendered in the browser through JS & WASM. Inspired by [Tsoding](https://www.youtube.com/@TsodingDaily) developing an online browser game ([koil](https://github.com/tsoding/koil/tree/main)) in C3.
+Its a really basic falling sand simulation written in C3. Inspired by [Tsoding](https://www.youtube.com/@TsodingDaily) developing an online browser game ([koil](https://github.com/tsoding/koil/tree/main)) in C3.
+
+Can be in your browser (rendered through JS & WASM), or run locally using Raylib
 
 ![demo](falling_sand_demo.png)
 
@@ -15,7 +17,7 @@ The sim was originally based on this coding challenge from [The Coding Train](ht
 
 [ ] I want to be able to load an image and use it as a starting point for the different particles.
 
-[ ] I want to be able to compile and even run this *without* WASM. Probably through SDL or even Raylib …
+[X] I want to be able to compile and even run this *without* WASM. Probably through SDL or even Raylib …
 # To Build
 
 First, make sure you've correctly installed the C3 compiler/build system, and that you have a C compiler installed.
@@ -32,8 +34,6 @@ Before compiling the main project, I recommend running the asset packer:
     c3c run packer
 ```
 
-Currently the assets its packing aren't used, but im planning on using it to fulfill goal #4.
-
 To compile it for WASM, use the following command:
 ```C
     c3c build wasm
@@ -44,14 +44,15 @@ To actually run it with wasm I recommend using the following command in the proj
     python3 -m http.server
 ```
 
-It can also be run as a normal C3 project (non WASM). I recommend:
+It can also be run as a normal C3 project (non WASM) using raylbi. I recommend:
 ```C
-    c3c run proj
+    c3c run
 ```
 
 # Dependencies
 
-[stb_image.h](https://github.com/nothings/stb/tree/master)
+[stb_image](https://github.com/nothings/stb/tree/master)
+[raylib](https://github.com/c3lang/vendor/blob/main/libraries/raylib6.c3l/raylib.c3i)
 
 # References
 
