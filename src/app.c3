@@ -78,7 +78,6 @@ fn void deinit() @feat(!WASM) {
 }
 
 module noir @feat(!WASM);
-import std::io;
 import noir::log;
 import noir::app;
 import raylib6;
@@ -89,35 +88,45 @@ fn int main(String[] args)
 	defer app::deinit();
 	app::update( (double)rl::get_frame_time());
 	while(!rl::window_should_close()) {
+		// Grab a texture from the canvas
 		RLTexture2D texture = rl::load_texture_from_image(app::canvas.to_rlimage());	
 		defer {
+			// unload the texture, THEN update the sim
 			rl::unload_texture(texture);
 			app::update( (double)rl::get_frame_time());
 		};
+		// get current screen dim
 		float screen_width = rl::get_screen_width();
 		float screen_height = rl::get_screen_height();
 
-		float w = texture.width;
-		float h = texture.height;
-		float x = (((float)screen_width/2) - (w/2));
-		float y = (((float)screen_height/2) - (h/2));
+		// set up rects
+		RLRectangle textureRect = {
+			0,0, texture.width, texture.height
+		};
+		RLRectangle screenRect = {
+			0,0,screen_width,screen_height
+		};
 
-		io::printfn("Screen Height: %s", screen_height);
-		io::printfn("Screen Width: %s", screen_width);
+		// Get mouse pos
+		RLVector2 mousePos = rl::get_mouse_position();
+		// Do scaling for actual position to in canvas position
+		int[<2>] trueMousePos = common::screen_to_render_texture_position({mousePos.x, mousePos.y}, &textureRect, &screenRect);
 
-		io::printfn("Texture Height: %s", h);
-		io::printfn("Texture Width: %s", w);
+		// set mouse pos for app
+		input::set_mouse_pos(...trueMousePos);
 
+		// Start drawing stuff
 		rl::begin_drawing();
+			//draw our canvas texture (with a WHITE tint, aka no tint 100% Opacity)
 			rl::draw_texture_pro( texture, 
-			{0,0,texture.width, texture.height},
-			{x, y, w, h}, 
-			{0,0}, 0,
-			rl::WHITE
-		);
+				textureRect,
+				screenRect, 
+				{0,0}, 0,
+				rl::WHITE
+			);
 		rl::end_drawing();
 	}
-	log("Hello!");
+	log("Goodbye!");
 	return 0;
 }
 

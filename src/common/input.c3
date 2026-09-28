@@ -10,7 +10,7 @@ fn void set_mouse_pos(int x, int y)@wasm @cname("set_mouse_pos") {
     mouseCoords = (int[<2>]){x, y};
 }
 
-fn int[<2>] mouse_pos() @feat(WASM) {
+fn int[<2>] mouse_pos() {
     return mouseCoords;
 }
 
@@ -87,13 +87,6 @@ fn bool get_mouse_once_frame(MouseButton mbutton) {
 module noir::common::input @feat(!WASM);
 import noir::common;
 import raylib6;
-
-fn int[<2>] mouse_pos() {
-	RLVector2 vec = rl::get_mouse_position();
-	// TODO: Scale mouse input to canvas size
-	// do we do that here or do we do that elsewhere...?
-    return {(int)vec.x, (int)vec.y};
-}
 
 macro mouse_left()           	=> rl::is_mouse_button_down(RLMouseButton.LEFT);
 macro mouse_right()          	=> rl::is_mouse_button_down(RLMouseButton.RIGHT);
