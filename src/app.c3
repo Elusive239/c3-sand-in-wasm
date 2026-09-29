@@ -77,38 +77,29 @@ fn void run() {
 	app::init();
 	defer app::deinit();
 
+	// this is kind of the only way to just create a texture of the correct size 
+	// without opening a texture file or something
 	RLRenderTexture2D target = rl::load_render_texture(app::canvas.width,app::canvas.height);
 	defer rl::unload_render_texture(target);
+
 	while(!rl::window_should_close()) {
 		int fps = rl::get_fps();
-		String fps_text = string::tformat("%s", fps);
+		String fps_text = string::tformat("%s\0", fps);
 		defer fps_text.free(tmem);
 
 		// update sim
 		app::update( (double)rl::get_frame_time());
 
 		// draw app canvas to render texture
-		rl::begin_texture_mode(target);
-			rl::clear_background(rl::BLACK);
-			Pixel* pixels = app::canvas.get_flat_buffer();
-			int x = 0;
-			int y =0;
-			for(int i =0 ; i < app::canvas.width*app::canvas.height; i++) {
-				if(pixels[i].a) rl::draw_pixel(x, y, {...pixels[i]});
-				x++;
-				if(x == app::canvas.width) {
-					x = 0;
-					y++;
-				}
-			}
-		rl::end_texture_mode();
+		target.texture.update((void*)app::canvas.get_flat_buffer());
+
 		// get current screen dim
 		float screen_width = rl::get_screen_width();
 		float screen_height = rl::get_screen_height();
 
 		// set up rects
 		RLRectangle textureRect = {
-			0,0, target.texture.width, (float)-target.texture.height
+			0,0, target.texture.width, (float)target.texture.height
 		};
 		RLRectangle screenRect = {
 			0,0,screen_width,screen_height
