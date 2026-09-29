@@ -55,13 +55,9 @@ fn void init() @cname("app_init") @feat(WASM) @wasm @init{
     // log("Simulation Start!");
 }
 
-fn void deinit() @cname("app_deinit") @feat(WASM) @finalizer @wasm{
-    canvas.free_canvas();
-    simulation.free_sim();
-}
-
 module noir::app @feat(!WASM);
 import noir::log;
+import noir::common;
 import raylib6;
 
 fn void init() @feat(!WASM) {
@@ -71,19 +67,13 @@ fn void init() @feat(!WASM) {
 	simulation.init(SIM_WIDTH, SIM_HEIGHT);
 }
 
-fn void deinit() @feat(!WASM) {
+fn void deinit() @feat(!WASM)  {
 	rl::close_window();
     canvas.free_canvas();
     simulation.free_sim();
 }
 
-module noir @feat(!WASM);
-import noir::log;
-import noir::app;
-import raylib6;
-
-fn int main(String[] args) 
-{
+fn void run() {
 	app::init();
 	defer app::deinit();
 	app::update( (double)rl::get_frame_time());
@@ -126,7 +116,14 @@ fn int main(String[] args)
 			);
 		rl::end_drawing();
 	}
+}
+
+module noir @feat(!WASM);
+
+fn int main(String[] args) 
+{
+	
+	app::run();
 	log("Goodbye!");
 	return 0;
 }
-
