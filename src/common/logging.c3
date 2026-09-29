@@ -53,7 +53,7 @@ fn void set_err(LoggerOut new_err_stream){
     err_stream = new_err_stream;
 }
 
-macro void full_log(LogType type, LoggerOut stream, String fmt, args...)@private{
+fn void full_log(LogType type, LoggerOut stream, String fmt, args...)@private{
     @pool(){
         DString str = dstring::temp_with_capacity(type.log_prefix.len + fmt.len + args.len * 8);
         if(type != LogType.NONE) str.append(type.log_prefix);
