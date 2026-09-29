@@ -39,11 +39,11 @@ fn void update(double dt) @cname("app_update") @wasm{
 	if(input::mouse_right() && simulation.get_state(...mousePos)!! == ParticleType.AIR) {
 		simulation.set_state(...mousePos, ParticleType.WALL);
 	}
-    renderer::render_image(&canvas, assets::new_hourglass_black_bg, 0,0 );
+    // renderer::render_image(&canvas, assets::new_hourglass_black_bg, 0,0 );
     simulation::push_to_buffer(&simulation,canvas.get_pixels());
     int size = 3;
     renderer::render_rect(&canvas, {255, 255, 255, 100}, size, size, ...mousePos - size/2);
-    renderer::render_image(&canvas, assets::test, CANVAS_WIDTH/2,CANVAS_HEIGHT/2 );
+    renderer::render_image(&canvas, assets::test, CANVAS_WIDTH/2 - assets::test.width/2,CANVAS_HEIGHT/2 - assets::test.height/2 );
 
 	$if $feat(WASM) :
     	renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height) ;
