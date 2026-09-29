@@ -4,7 +4,7 @@ import noir::common;
 import std;
 
 fn void add_particle_air(Simulation* simulation) {
-	simulation.add_new_particle({
+	simulation.add_new_particle( ParticleType.AIR,{
 		fn Pixel(Simulation* sim, int x, int y) => {0,0,0, 255}, 
 		&step_particle_air
 	}); // AIR

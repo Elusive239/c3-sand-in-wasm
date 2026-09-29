@@ -4,7 +4,7 @@ import noir::common;
 import std;
 
 fn void add_particle_sand(Simulation* simulation) {
-	simulation.add_new_particle({
+	simulation.add_new_particle(ParticleType.SAND,{
 		fn Pixel(Simulation* sim, int x, int y) => {255, 253, 208, 255},
 		&step_particle_sand
 	}); // SAND

@@ -22,8 +22,10 @@ fn void Simulation.init(Simulation* sim, int width, int height){
 	sim.ptable.init(mem);
 }
 
-fn void Simulation.add_new_particle(&sim, ParticleTypeVTable table) {
-	sim.ptable.set(sim.ptable.len(), table);
+fn bool Simulation.add_new_particle(&sim, sz id, ParticleTypeVTable table) {
+	if(sim.ptable.has_key(id)) return false;
+	sim.ptable.set(id, table);
+	return true;
 }
 
 fn void Simulation.free_sim(Simulation* sim){

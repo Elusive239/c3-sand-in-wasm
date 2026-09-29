@@ -4,7 +4,7 @@ import noir::common;
 import std;
 
 fn void add_particle_wall(Simulation* simulation) {
-	simulation.add_new_particle({
+	simulation.add_new_particle(ParticleType.WALL,{
 		fn Pixel(Simulation* sim, int x, int y) => {120, 120, 120, 255}, 
 		null
 	}); // WALL
