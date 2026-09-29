@@ -76,22 +76,39 @@ fn void deinit() @feat(!WASM)  {
 fn void run() {
 	app::init();
 	defer app::deinit();
-	app::update( (double)rl::get_frame_time());
+
+	RLRenderTexture2D target = rl::load_render_texture(app::canvas.width,app::canvas.height);
+	defer rl::unload_render_texture(target);
 	while(!rl::window_should_close()) {
-		// Grab a texture from the canvas
-		RLTexture2D texture = rl::load_texture_from_image(app::canvas.to_rlimage());	
-		defer {
-			// unload the texture, THEN update the sim
-			rl::unload_texture(texture);
-			app::update( (double)rl::get_frame_time());
-		};
+		int fps = rl::get_fps();
+		String fps_text = string::tformat("%s", fps);
+		defer fps_text.free(tmem);
+
+		// update sim
+		app::update( (double)rl::get_frame_time());
+
+		// draw app canvas to render texture
+		rl::begin_texture_mode(target);
+			rl::clear_background(rl::BLACK);
+			Pixel* pixels = app::canvas.get_flat_buffer();
+			int x = 0;
+			int y =0;
+			for(int i =0 ; i < app::canvas.width*app::canvas.height; i++) {
+				if(pixels[i].a) rl::draw_pixel(x, y, {...pixels[i]});
+				x++;
+				if(x == app::canvas.width) {
+					x = 0;
+					y++;
+				}
+			}
+		rl::end_texture_mode();
 		// get current screen dim
 		float screen_width = rl::get_screen_width();
 		float screen_height = rl::get_screen_height();
 
 		// set up rects
 		RLRectangle textureRect = {
-			0,0, texture.width, texture.height
+			0,0, target.texture.width, (float)-target.texture.height
 		};
 		RLRectangle screenRect = {
 			0,0,screen_width,screen_height
@@ -107,13 +124,16 @@ fn void run() {
 
 		// Start drawing stuff
 		rl::begin_drawing();
+			rl::clear_background(rl::BLACK);
 			//draw our canvas texture (with a WHITE tint, aka no tint 100% Opacity)
-			rl::draw_texture_pro( texture, 
+			rl::draw_texture_pro( 
+				target.texture, 
 				textureRect,
 				screenRect, 
 				{0,0}, 0,
 				rl::WHITE
 			);
+			rl::draw_text((ZString)fps_text, 10,10,18,rl::WHITE);
 		rl::end_drawing();
 	}
 }
