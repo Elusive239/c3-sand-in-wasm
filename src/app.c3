@@ -9,11 +9,11 @@ import noir::common::canvas;
 tlocal Simulation simulation;
 tlocal Canvas canvas;
 
-const int SIM_WIDTH = 320*2;
-const int SIM_HEIGHT = 180*2;
-
-const int CANVAS_WIDTH = 320*2;
-const int CANVAS_HEIGHT = 180*2;
+// Should really consolidate this at some point...
+const int SIM_WIDTH = 320;
+const int SIM_HEIGHT = 180;
+const int CANVAS_WIDTH = 320;
+const int CANVAS_HEIGHT = 180;
 
 fn void update(double dt) @cname("app_update") @wasm{
     renderer::clear_canvas(&canvas);
@@ -32,7 +32,7 @@ fn void update(double dt) @cname("app_update") @wasm{
 
         for(int y = dy ; y < ey; y++ ){
             for(int x =  dx; x < ex; x++ ){
-                simulation.put_state(x, y, State.SAND);
+                simulation.put_state(x, y, 2);
             }
         }
     }

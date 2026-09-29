@@ -15,8 +15,6 @@ The sim was originally based on this coding challenge from [The Coding Train](ht
 
 [ ] I want to be able to add whatever kind of particle I want to the simulation at runtime, not just randomly rain sand down from the top.
 
-[ ] I want to be able to load an image and use it as a starting point for the different particles.
-
 [X] I want to be able to compile and even run this *without* WASM. Probably through SDL or even Raylib …
 # To Build
 
