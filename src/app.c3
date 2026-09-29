@@ -12,8 +12,6 @@ tlocal Canvas canvas;
 // Should really consolidate this at some point...
 const int SIM_WIDTH = 320;
 const int SIM_HEIGHT = 180;
-const int CANVAS_WIDTH = 320;
-const int CANVAS_HEIGHT = 180;
 
 fn void update(double dt) @cname("app_update") @wasm{
     renderer::clear_canvas(&canvas);
@@ -41,9 +39,9 @@ fn void update(double dt) @cname("app_update") @wasm{
 	}
     // renderer::render_image(&canvas, assets::new_hourglass_black_bg, 0,0 );
     simulation::push_to_buffer(&simulation,canvas.get_pixels());
-    int size = 3;
+    int size = 1;
     renderer::render_rect(&canvas, {255, 255, 255, 100}, size, size, ...mousePos - size/2);
-    renderer::render_image(&canvas, assets::test, CANVAS_WIDTH/2 - assets::test.width/2,CANVAS_HEIGHT/2 - assets::test.height/2 );
+    renderer::render_image(&canvas, assets::test, SIM_WIDTH/2 - assets::test.width/2,SIM_HEIGHT/2 - assets::test.height/2 );
 
 	$if $feat(WASM) :
     	renderer::render(canvas.get_flat_buffer(), canvas.width, canvas.height) ;
@@ -53,7 +51,7 @@ fn void update(double dt) @cname("app_update") @wasm{
 fn void init() @cname("app_init") @feat(WASM) @wasm @init{
     // log("Simulation Init.");
     // common::init_canvas(640,360);
-    canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+    canvas.init_canvas(SIM_WIDTH, SIM_HEIGHT);
     simulation.init(SIM_WIDTH, SIM_HEIGHT);
 	simulation.add_default_particles();
     // log("Simulation Start!");
@@ -65,9 +63,9 @@ import noir::common;
 import raylib6;
 
 fn void init() @feat(!WASM) {
-	rl::init_window(CANVAS_WIDTH, CANVAS_HEIGHT, "Falling Sand Demo!");
+	rl::init_window(SIM_WIDTH, SIM_HEIGHT, "Falling Sand Demo!");
 	rl::toggle_fullscreen();
-	canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+	canvas.init_canvas(SIM_WIDTH, SIM_HEIGHT);
 	simulation.init(SIM_WIDTH, SIM_HEIGHT);
 	simulation.add_default_particles();
 }
