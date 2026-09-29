@@ -32,12 +32,15 @@ fn void update(double dt) @cname("app_update") @wasm{
 
         for(int y = dy ; y < ey; y++ ){
             for(int x =  dx; x < ex; x++ ){
-                simulation.put_state(x, y, 2);
+				if(simulation.get_state(x, y)!! == ParticleType.AIR) simulation.set_state(x, y, ParticleType.SAND);
             }
         }
     }
+	if(input::mouse_right() && simulation.get_state(...mousePos)!! == ParticleType.AIR) {
+		simulation.set_state(...mousePos, ParticleType.WALL);
+	}
     renderer::render_image(&canvas, assets::new_hourglass_black_bg, 0,0 );
-    simulation.push_to_buffer(canvas.get_pixels());
+    simulation::push_to_buffer(&simulation,canvas.get_pixels());
     int size = 3;
     renderer::render_rect(&canvas, {255, 255, 255, 100}, size, size, ...mousePos - size/2);
     renderer::render_image(&canvas, assets::test, CANVAS_WIDTH/2,CANVAS_HEIGHT/2 );
@@ -52,6 +55,7 @@ fn void init() @cname("app_init") @feat(WASM) @wasm @init{
     // common::init_canvas(640,360);
     canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     simulation.init(SIM_WIDTH, SIM_HEIGHT);
+	simulation.add_default_particles();
     // log("Simulation Start!");
 }
 
@@ -65,6 +69,7 @@ fn void init() @feat(!WASM) {
 	rl::toggle_fullscreen();
 	canvas.init_canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
 	simulation.init(SIM_WIDTH, SIM_HEIGHT);
+	simulation.add_default_particles();
 }
 
 fn void deinit() @feat(!WASM)  {
