@@ -32,14 +32,18 @@ fn void Simulation.free_sim(Simulation* sim){
 	sim.ptable.free();
 }
 
+fn bool Simulation.is_state(Simulation* sim, int x, int y, int state) @inline {
+	return (sim.get_state(x, y) == state) ?? false;
+}
+
 fn void Simulation.set_state(Simulation* sim, int x, int y, int state) {
     sim.particles[y][x].pstate = state;
 }
 
-fn sz? Simulation.get_state(&self,int x, int y) {
-    if(x >= self.width || x < 0) return  SIMULATION_OUT_OF_BOUNDS~;
-    if(y >= self.height || y < 0) return SIMULATION_OUT_OF_BOUNDS~;
-    return self.particles[y][x].pstate;
+fn sz? Simulation.get_state(&sim,int x, int y) {
+    if(x >= sim.width || x < 0) return  SIMULATION_OUT_OF_BOUNDS~;
+    if(y >= sim.height || y < 0) return SIMULATION_OUT_OF_BOUNDS~;
+    return sim.particles[y][x].pstate;
 }
 
 fn void Simulation.step(Simulation* sim) {
