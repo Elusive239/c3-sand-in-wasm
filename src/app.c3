@@ -138,6 +138,6 @@ fn int main(String[] args)
 {
 	
 	app::run();
-	log("Goodbye!");
+	log::info("Goodbye!");
 	return 0;
 }
